@@ -7,9 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Parse/Parse.h>
+#import <FacebookSDK/FacebookSDK.h>
+#import "SocketUtil.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, CLLocationManagerDelegate>
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url;
 
 @property (strong, nonatomic) UIWindow *window;
+@property (nonatomic, strong) SocketUtil *socket;
+@property (nonatomic, strong) CLLocationManager *locationManager;
 
 @end
