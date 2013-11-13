@@ -58,6 +58,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self.navigationController setNavigationBarHidden:YES];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES];
     self.activityIndicator.hidden = YES;
 	// Do any additional setup after loading the view.
     if ([PFUser currentUser] && // Check if a user is cached

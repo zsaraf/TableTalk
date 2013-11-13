@@ -11,13 +11,25 @@
 #import "TableTalkUtil.h"
 #import "WaitForJudgeViewController.h"
 #import "WinnerViewController.h"
+#import "UIImageView+UIActivityIndicatorForSDWebImage.h"
+#import "UIImageView+WebCache.h"
+#import "FriendCardView.h"
 
 @interface GamePhotoScrollViewController ()
 
-@property (nonatomic, strong) UIScrollView *photoScrollView;
+
+@property (nonatomic, strong) NSMutableArray *scrollViewArray;
 @property (nonatomic, assign) NSInteger currentPage;
-@property (nonatomic, strong) NSArray *card_fbIDs;
 @property (nonatomic, assign) BOOL isJudging;
+@property (nonatomic, assign) NSInteger numPhotosLoaded;
+@property (nonatomic, strong) UIView *blackView;
+
+@property (nonatomic, assign) CGFloat firstY;
+@property (nonatomic, assign) CGFloat currentY;
+@property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) UIToolbar *toolbar;
+@property (nonatomic, weak) FriendCardView *current;
+@property (nonatomic, assign) CGFloat screenWidth;
 
 @end
 
@@ -36,38 +48,214 @@
 {
     self = [super init];
     if (self) {
-        self.card_fbIDs = fbIDs;
+        self.scrollViewArray = [[NSMutableArray alloc] init];
         self.isJudging = isJudge;
         [TableTalkUtil appDelegate].socket.delegate = self;
         
+        self.contentView = [[UIView alloc] init];
+        int index = 0;
+        for (NSString *fbID in fbIDs) {
+            FriendCardView *sv = [[FriendCardView alloc] initWithFBId:fbID andIndex:index isLast:(index == fbIDs.count - 1)];
+            sv.delegate = self;
+            [self.scrollViewArray addObject:sv];
+            [self.contentView insertSubview:sv atIndex:0];
+            index ++;
+        }
+        
     }
     return self;
+}
+
+-(CGFloat)screenWidth
+{
+    CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    return screenWidth;
+}
+
+-(void)setScreenWidth:(CGFloat)screenWidth {}
+
+-(void)didFinishLoadingImage:(UIImage *)image forIndex:(NSInteger)index
+{
+    self.numPhotosLoaded ++;
+    if (self.numPhotosLoaded >= self.scrollViewArray.count) {
+        [self.blackView removeFromSuperview];
+    }
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     self.automaticallyAdjustsScrollViewInsets = NO;
-	// Do any additional setup after loading the view.
+    
+    UIPanGestureRecognizer *recognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(userDidPan:)];
+    [self.contentView addGestureRecognizer:recognizer];
+    
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(screenTapped:)];
+    [self.contentView addGestureRecognizer:tapRecognizer];
+    [recognizer requireGestureRecognizerToFail:tapRecognizer];
+}
+
+-(IBAction)screenTapped:(UITapGestureRecognizer *)sender
+{
+    NSLog(@"screen tapped");
+    UIView *v = [self.contentView hitTest:[sender locationInView:self.contentView] withEvent:nil];
+    while (![v isKindOfClass:[FriendCardView class]]) v = v.superview;
+    FriendCardView *fv = (FriendCardView *)v;
+    
+    if (fv.index == self.currentPage) {
+        WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
+        [TableTalkUtil appDelegate].socket.delegate = vc;
+        [self.navigationController pushViewController:vc animated:YES];
+        [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:fv.fbID];
+        return;
+    }
+    
+    NSLog(@"Friend Card View index # %d tapped", fv.index);
+    [UIView animateWithDuration:.3 animations:^{
+    
+        if (fv.index < self.currentPage) {
+            for (int i = fv.index; i <= self.currentPage; i++) {
+                FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
+                [v setFrame:[self frameForCardViewAtIndex:i isInUpState:NO]];
+                [v setBlurredImageViewAlpha:1.];
+            }
+        } else {
+            for (int i = self.currentPage; i < fv.index; i++) {
+                FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
+                [v setFrame:[self frameForCardViewAtIndex:i isInUpState:YES]];
+                [v setBlurredImageViewAlpha:1.];
+            }
+        }
+    }];
+    FriendCardView *cv = [self.scrollViewArray objectAtIndex:fv.index];
+    [cv setBlurredImageViewAlpha:0.];
+    self.currentPage = fv.index;
+}
+
+-(CGRect)frameForCardViewAtIndex:(NSInteger)index isInUpState:(BOOL)isInUpState
+{
+    CGRect frame = CGRectMake(0, index * self.contentView.frame.size.height/12, self.contentView.frame.size.width, self.contentView.frame.size.height/2);
+    if (isInUpState) {
+        frame.origin.y -= frame.size.height - self.contentView.frame.size.height/12;
+    }
+    return frame;
+}
+
+-(IBAction)userDidPan:(UIPanGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        
+        self.firstY = [sender locationInView:self.contentView].y;
+    } else if (sender.state == UIGestureRecognizerStateChanged) {
+        CGPoint location = [sender locationInView:self.contentView];
+        if (self.current == nil) {
+            int index = (location.y < self.firstY) ? self.currentPage : self.currentPage - 1;
+            if (index < 0 || index >= self.scrollViewArray.count - 1) return;
+            self.current = [self.scrollViewArray objectAtIndex:index];
+        }
+        [self.current setFrame:CGRectOffset(self.current.frame, 0, [sender translationInView:self.view].y)];
+        CGFloat alpha = abs(location.y - self.firstY)/self.current.frame.size.height;
+        if (location.y < self.firstY) alpha = 1- alpha;
+        
+        [self.current setBlurredImageViewAlpha:1 - alpha];
+        FriendCardView *next = [self.scrollViewArray objectAtIndex:self.current.index + 1];
+        [next setBlurredImageViewAlpha:alpha];
+        [sender setTranslation:CGPointZero inView:self.view];
+    } else if (sender.state == UIGestureRecognizerStateEnded) {
+        if (self.current == nil) return;
+        CGPoint location = [sender locationInView:self.contentView];
+        int diff = abs(self.firstY - location.y);
+        if (self.firstY < location.y) {
+            diff += [sender velocityInView:self.view].y/10;
+        } else {
+            diff -= [sender velocityInView:self.view].y/10;
+        }
+        CGRect newFrame = CGRectMake(0, self.current.index * self.contentView.frame.size.height/12, self.contentView.frame.size.width, self.contentView.frame.size.height/2);
+        CGFloat newAlpha = 0.;
+        if (diff < self.current.frame.size.height/2) {
+            if (location.y > self.firstY) {
+                newAlpha = 1.;
+                newFrame.origin.y -= self.current.frame.size.height - self.contentView.frame.size.height/12;
+            }
+        } else {
+            if (location.y <= self.firstY) {
+                newFrame.origin.y -= self.current.frame.size.height - self.contentView.frame.size.height/12;
+                newAlpha = 1.;
+                self.currentPage ++;
+            } else {
+                self.currentPage --;
+            }
+        }
+        CGFloat animationTime = abs(newFrame.origin.y - self.current.frame.origin.y) * 1/[sender velocityInView:self.view].y;
+        [UIView animateWithDuration:animationTime animations:^{
+            [self.current setFrame:newFrame];
+            [self.current setBlurredImageViewAlpha:newAlpha];
+            FriendCardView *next = [self.scrollViewArray objectAtIndex:self.current.index + 1];
+            [next setBlurredImageViewAlpha:1-newAlpha];
+        }];
+        self.current = nil;
+    }
 }
 
 -(void)viewWillAppear:(BOOL)animated
 {
-    self.photoScrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    [self.photoScrollView setBackgroundColor:[UIColor blackColor]];
-    [self.view addSubview:self.photoScrollView];
-    [self.photoScrollView setPagingEnabled:YES];
-    [self.photoScrollView setDelegate:self];
-    [self addFriendScrollViews];
+    [super viewWillAppear:animated];
+    
+    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
+    [self.toolbar setBarTintColor:[UIColor colorWithRed:22/255. green:31/255. blue:40/255. alpha:1.0]]; //rgba(44, 62, 80,1.0)
+    [self.toolbar setTranslucent:NO];
+    NSString *superlativeString = @"Best Dick...";
+    UIFont *myFont = [UIFont fontWithName:@"Futura-CondensedMedium" size:30];
+    CGSize size = [superlativeString sizeWithAttributes:@{NSFontAttributeName:myFont}];
+    CGFloat verticalPadding = (self.toolbar.frame.size.height - size.height)/2;
+    UILabel *superlativeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, verticalPadding, self.toolbar.frame.size.width, self.toolbar.frame.size.height - 2 * verticalPadding)];
+    [superlativeLabel setText:superlativeString];
+    [superlativeLabel setFont:myFont];
+    [superlativeLabel setTextAlignment:NSTextAlignmentCenter];
+    [superlativeLabel setTextColor:[UIColor whiteColor]];
+    UIView *labelBckgdView = [[UIView alloc] initWithFrame:CGRectMake(0, 10, self.view.bounds.size.width, self.toolbar.frame.size.height - 10)];
+    [labelBckgdView addSubview:superlativeLabel];
+    UIBarButtonItem *superlative = [[UIBarButtonItem alloc] initWithCustomView:labelBckgdView];
+    self.toolbar.items = [NSArray arrayWithObjects:
+                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                          superlative,
+                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                          nil];
+    [self.view addSubview:self.toolbar];
+    
+    [self.contentView setFrame:CGRectMake(0, self.toolbar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.toolbar.frame.size.height)];
+    [self.view addSubview:self.contentView];
+    for (int i = 0; i < self.scrollViewArray.count; i++) {
+        UIView *sv = [self.scrollViewArray objectAtIndex:i];
+        [sv setFrame:CGRectMake(0, (i)*self.contentView.frame.size.height/12, self.contentView.frame.size.width, self.contentView.frame.size.height/2)];
+    }
+    
+    self.currentPage = 0;
+    
+    self.blackView = [[UIView alloc] initWithFrame:self.contentView.bounds];
+    [self.blackView setBackgroundColor:[UIColor blackColor]];
+    [self.view addSubview:self.blackView];
+    
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    [indicator setFrame:CGRectInset(self.contentView.bounds, 100, 100)];
+    [self.blackView addSubview:indicator];
+    [indicator startAnimating];
+    
+    [self.view bringSubviewToFront:self.toolbar];
     
     UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(photoDoubleTapped:)];
     [recognizer setNumberOfTapsRequired:2];
-    [self.photoScrollView addGestureRecognizer:recognizer];
+    [self.view addGestureRecognizer:recognizer];
+    
+    
 }
+
+
 
 -(IBAction)photoDoubleTapped:(UITapGestureRecognizer *)sender
 {
-    NSInteger friendIndex = self.photoScrollView.contentOffset.x/self.photoScrollView.frame.size.width;
+    NSLog(@"photo doubel tapped");
+    /*NSInteger friendIndex = self.photoScrollView.contentOffset.x/self.photoScrollView.frame.size.width;
     if (self.isJudging) {
         [[TableTalkUtil appDelegate].socket sendChoseWinnerMessage:[self.card_fbIDs objectAtIndex:friendIndex]];
     } else {
@@ -75,7 +263,7 @@
         [TableTalkUtil appDelegate].socket.delegate = vc;
         [self.navigationController pushViewController:vc animated:YES];
         [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:[self.card_fbIDs objectAtIndex:friendIndex]];
-    }
+    }*/
 }
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet
@@ -93,19 +281,33 @@
     }
 }
 
--(void)addFriendScrollViews
+-(void)viewDidAppear:(BOOL)animated
 {
-    [self.photoScrollView setContentSize:CGSizeMake(self.card_fbIDs.count * self.view.frame.size.width, self.view.frame.size.height)];
-    for (int i = 0; i < self.card_fbIDs.count; i++) {
-        OneFriendPhotoScrollView *sv = [[OneFriendPhotoScrollView alloc] initWithFrame:CGRectOffset(self.view.frame, i *self.view.frame.size.width, 0) andPhotoURL:[NSURL URLWithString:[NSString stringWithFormat:GRAPH_SEARCH_URL_FORMAT, [self.card_fbIDs objectAtIndex:i]]]];
-        [self.photoScrollView addSubview:sv];
-    }
+    [super viewDidAppear:animated];
+    
 }
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    NSLog(@"scrolling");
 }
+
+/*-(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    FriendCardView *sv = (FriendCardView *)scrollView;
+    if (scrollView.contentOffset.y != 0) {
+        self.currentPage = sv.index + 1;
+        NSLog(@"%d", self.currentPage);
+    } else {
+        self.currentPage = sv.index;
+    }
+    int scrollTempCurrentPage = (self.currentPage == self.scrollViewArray.count - 1) ? self.currentPage - 1 : self.currentPage;
+    for (int i = 0; i < self.scrollViewArray.count; i++) {
+        if (i != scrollTempCurrentPage && i != scrollTempCurrentPage -1)
+            [[self.scrollViewArray objectAtIndex:i] setUserInteractionEnabled:NO];
+        else
+            [[self.scrollViewArray objectAtIndex:i] setUserInteractionEnabled:YES];
+    }
+}*/
 
 - (void)didReceiveMemoryWarning
 {

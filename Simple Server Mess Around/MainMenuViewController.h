@@ -10,7 +10,7 @@
 #import "SocketIO.h"
 #import "TableTalkUtil.h"
 
-@interface MainMenuViewController : UIViewController <SocketUtilDelegate>
+@interface MainMenuViewController : UIViewController <SocketUtilDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic, weak) IBOutlet UITextField *groupID;
 @property (nonatomic, weak) IBOutlet UIButton *goButton;

@@ -17,6 +17,5 @@
 
 @property (strong, nonatomic) UIWindow *window;
 @property (nonatomic, strong) SocketUtil *socket;
-@property (nonatomic, strong) CLLocationManager *locationManager;
 
 @end

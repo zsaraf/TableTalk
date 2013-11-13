@@ -11,4 +11,9 @@
 
 @interface JudgeViewController : UIViewController <SocketUtilDelegate>
 
+-(id)initWithPlayers:(NSArray *)players superlatives:(NSArray *)superlatives;
+
+@property (nonatomic, strong) NSArray *players;
+@property (nonatomic, strong) NSArray *superlatives;
+
 @end

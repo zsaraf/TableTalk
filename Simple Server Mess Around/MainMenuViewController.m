@@ -16,6 +16,7 @@
 
 @property (nonatomic, strong) SocketIO *socketIO;
 @property (nonatomic, strong) NSMutableArray *friendIds;
+@property (nonatomic, strong) CLLocationManager *locationManager;
 
 @end
 
@@ -24,7 +25,13 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    [self.navigationController setNavigationBarHidden:YES];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    self.locationManager =[[CLLocationManager alloc] init];
+    [self.locationManager setDelegate:self];
+    [self.locationManager startUpdatingLocation];
     
     FBRequest *request = [FBRequest requestForMe];
     
@@ -82,6 +89,11 @@
             NSArray *friendUsers = [friendQuery findObjects];*/
         }
     }];
+}
+
+-(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    NSLog(@"updating locations");
 }
 
 -(IBAction)goButtonPressed:(id)sender

@@ -32,10 +32,12 @@
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet
 {
-    if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"playerFinished"]) return;
+    if (![[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"startRound"]) return;
     NSArray *friends = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
     if (friends == nil) {
-        JudgeViewController *vc = [[JudgeViewController alloc] init];
+        NSArray *players = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"otherPlayers"];
+        NSArray *superlatives = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlatives"];
+        JudgeViewController *vc = [[JudgeViewController alloc] initWithPlayers:players superlatives:superlatives];
         [TableTalkUtil appDelegate].socket.delegate = vc;
         [self.navigationController pushViewController:vc animated:YES];
     } else {

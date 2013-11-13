@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
+#import "GamePhotoScrollViewController.h"
+#import "JudgeViewController.h"
 
 @implementation AppDelegate
 
@@ -18,7 +20,15 @@
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     [PFFacebookUtils initializeFacebook];
     
-    self.locationManager = [[CLLocationManager alloc] init];
+    [[UIApplication sharedApplication] setStatusBarHidden:YES];
+    /*NSArray *players = [NSArray arrayWithObjects:@"521242550",@"521827780",@"524372404",@"524693200",@"524747587", @"588688409", @"1323098301", nil];
+    NSArray *superlatives = [NSArray arrayWithObjects:@"Most likely to sleep with a stripper", @"Most likely to laugh at a midget", @"Most likely to twerk at her own wedding", @"Would make the best sandwich under pressure", nil];
+    JudgeViewController *vc = [[JudgeViewController alloc] initWithPlayers:players superlatives:superlatives];
+    [self.window setRootViewController:vc];*/
+    NSArray *friendsArray = [NSArray arrayWithObjects:@"521242550",@"521827780",@"524372404",@"524693200",@"524747587", @"588688409", @"1323098301", nil];
+    GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friendsArray isJudge:NO];
+    [self.window setRootViewController:vc];
+    
     // Override point for customization after application launch.
     return YES;
 }

@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "TableTalkUtil.h"
+#import "FriendCardView.h"
 
-@interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate>
+@interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate, NSURLConnectionDelegate, FriendCardViewDelegate>
 
 -(id)initWithCardFBIds:(NSArray *)fbIDs isJudge:(BOOL)isJudge;
 
