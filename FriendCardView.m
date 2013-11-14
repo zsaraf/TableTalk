@@ -15,12 +15,14 @@
 
 @interface FriendCardView ()
 
-@property (nonatomic, strong) NSURLConnection *connection;
-@property (nonatomic, strong) NSMutableData *imageData;
+@property (nonatomic, strong) NSURLConnection *linkConnection;
+@property (nonatomic, strong) NSMutableData *data;
 @property (nonatomic, strong) UIImage *img;
 @property (nonatomic, strong) UIImageView *imgView;
 @property (nonatomic, assign) BOOL isLast;
 @property (nonatomic, strong) UIView *transparentNameView;
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) UILabel *nameLabel;
 
 @end
 
@@ -45,7 +47,7 @@
     {
         self.clipsToBounds = YES;
         self.fbID = fbID;
-        self.imageData = [[NSMutableData alloc] init];
+        self.data = [[NSMutableData alloc] init];
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:GRAPH_SEARCH_URL_FORMAT, fbID]];
         
         SDWebImageManager *manager = [SDWebImageManager sharedManager];
@@ -60,11 +62,10 @@
                         }
                     }];
         
-       /* NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url
-                                                                  cachePolicy:NSURLRequestUseProtocolCachePolicy
-                                                              timeoutInterval:2.0f];
-        // Run network request asynchronously
-        self.connection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];*/
+        NSURL *linkURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://graph.facebook.com/%@?fields=name", self.fbID]];
+        NSURLRequest *request = [[NSURLRequest alloc] initWithURL:linkURL];
+        self.linkConnection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+        
         self.index = index;
         self.imgView = [[UIImageView alloc] init];
         [self.imgView setContentMode:UIViewContentModeScaleToFill];
@@ -78,13 +79,17 @@
         
         self.blurredImageView = [[UIImageView alloc] init];
         [self addSubview:self.blurredImageView];
+        
+        if (!self.name) self.name = @"";
+        
+        self.nameLabel = [[UILabel alloc] init];
+        [self.nameLabel setFont:[UIFont fontWithName:@"Futura-Medium" size:20]];
+        [self fixNameLabelSizeForName];
+        [self.nameLabel setTextColor:[UIColor whiteColor]];
+        [self.nameLabel setTextAlignment:NSTextAlignmentLeft];
+        [self insertSubview:self.nameLabel aboveSubview:self.transparentNameView];
     }
     return self;
-}
-
-// Called every time a chunk of the data is received
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
-    [self.imageData appendData:data]; // Build the image
 }
 
 -(UIImage *)drawBlur
@@ -101,12 +106,34 @@
     return blurredSnapshotImage;
 }
 
+-(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+    [self.data appendData:data];
+}
+
+-(void)fixNameLabelSizeForName
+{
+    if (self.nameLabel == nil || [self.name isEqualToString:@""]) {
+        return;
+    }
+    
+    CGSize size = [self.name sizeWithAttributes:@{NSFontAttributeName:self.nameLabel.font}];
+    [self.nameLabel setFrame:CGRectMake((1 -self.blurredImageViewAlpha) * (self.frame.size.width - size.width), self.frame.size.height - self.labelHeight, size.width, self.labelHeight)];
+    [self.nameLabel setText:self.name];
+}
+
 // Called when the entire image is finished downloading
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     // Set the image in the header imageView
-    //self.img = [UIImage imageWithData:self.imageData];
+    if (connection == self.linkConnection) {
+        NSError *error;
+        NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:self.data options:kNilOptions error:&error];
+        self.name = [dict objectForKey:@"name"];
+        [self fixNameLabelSizeForName];
+        return;
+    }
+    
     [self.imgView setImage:self.img];
-    //[self.blurredImageView setImage:[self drawBlur]];
     [self.blurredImageView setImage:[BlurUtils drawBlur:self.imgView size:self.bounds.size cropRect:CGRectMake(0, 5/6.0, 1, 1/6.0)]];
     [self.delegate didFinishLoadingImage:self.img forIndex:self.index];
 }
@@ -114,15 +141,21 @@
 -(void)setFrame:(CGRect)frame
 {
     [super setFrame:frame];
-    //[self.imgView setFrame:self.bounds];
     [self.imgView setFrame:CGRectMake(0, self.frame.size.height/2* self.blurredImageViewAlpha, self.frame.size.width, self.frame.size.height)];
     [self correctLabelViews];
 }
 
 -(void)correctLabelViews
 {
-    [self.blurredImageView setFrame:CGRectMake(0, self.frame.size.height - self.labelHeight, self.frame.size.width, self.labelHeight)];
-    [self.transparentNameView setFrame:CGRectMake(0, self.frame.size.height - self.labelHeight, self.frame.size.width, self.labelHeight)];
+    CGRect frame = CGRectMake(0, self.frame.size.height - self.labelHeight, self.frame.size.width, self.labelHeight);
+    [self.blurredImageView setFrame:frame];
+    [self.transparentNameView setFrame:frame];
+    
+    CGRect labelFrame = self.nameLabel.frame;
+    labelFrame.origin.y = self.frame.size.height - self.labelHeight;
+    labelFrame.origin.x = (1 - self.blurredImageViewAlpha) * (self.frame.size.width - labelFrame.size.width);
+    [self.nameLabel setFrame:labelFrame];
+
 }
 
 -(void)setLabelHeight:(CGFloat)labelHeight
@@ -137,15 +170,13 @@
     if (!self.blurredImageView || !self.imgView || CGSizeEqualToSize(self.bounds.size, CGSizeZero)) return;
     [self.blurredImageView setAlpha:blurredImageViewAlpha];
     [self.imgView setFrame:CGRectMake(0, self.frame.size.height/2* blurredImageViewAlpha, self.frame.size.width, self.frame.size.height)];
+    if (blurredImageViewAlpha == 0) {
+        [self bringSubviewToFront:self.nameLabel];
+    }
+    
+    CGRect labelFrame = self.nameLabel.frame;
+    labelFrame.origin.x = (1 - self.blurredImageViewAlpha) * (self.frame.size.width - labelFrame.size.width);
+    [self.nameLabel setFrame:labelFrame];
 }
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
 
 @end

@@ -85,11 +85,15 @@
                 FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
                 CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
                 [v setFrame:CGRectMake(0, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
+                
             }
-            //[self.blackView setAlpha:0.0];
-        } /*completion:^(BOOL finished) {
-            [self.blackView removeFromSuperview];
-        }*/];
+        } completion:^(BOOL finished) {
+            for (int i = 0; i < self.scrollViewArray.count; i++) {
+                FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
+                CGFloat alpha = (i == 0) ? 0 : 1;
+                [v setBlurredImageViewAlpha:alpha];
+            }
+        }];
     }
 }
 
@@ -121,7 +125,6 @@
         return;
     }
     
-    NSLog(@"Friend Card View index # %d tapped", fv.index);
     [UIView animateWithDuration:.3 animations:^{
     
         if (fv.index < self.currentPage) {
@@ -137,9 +140,9 @@
                 [v setBlurredImageViewAlpha:1.];
             }
         }
+        FriendCardView *cv = [self.scrollViewArray objectAtIndex:fv.index];
+        [cv setBlurredImageViewAlpha:0.];
     }];
-    FriendCardView *cv = [self.scrollViewArray objectAtIndex:fv.index];
-    [cv setBlurredImageViewAlpha:0.];
     self.currentPage = fv.index;
 }
 
@@ -218,6 +221,7 @@
             [next setBlurredImageViewAlpha:1-newAlpha];
         }];
         self.current = nil;
+        [sender setTranslation:CGPointZero inView:self.view];
     }
 }
 
