@@ -26,6 +26,8 @@
 
 @implementation FriendCardView
 
+@synthesize labelHeight = _labelHeight;
+
 - (id)initWithFrame:(CGRect)frame
 {
     //NSAssert(0, @"dont use this");
@@ -112,14 +114,24 @@
 {
     [super setFrame:frame];
     [self.imgView setFrame:self.bounds];
-    [self.blurredImageView setFrame:CGRectMake(0, 5*self.frame.size.height/6, self.frame.size.width, self.frame.size.height/6)];
-    [self.transparentNameView setFrame:CGRectMake(0, 5*self.frame.size.height/6, self.frame.size.width, self.frame.size.height/6)];
+    [self correctLabelViews];
+}
+
+-(void)correctLabelViews
+{
+    [self.blurredImageView setFrame:CGRectMake(0, self.frame.size.height - self.labelHeight, self.frame.size.width, self.labelHeight)];
+    [self.transparentNameView setFrame:CGRectMake(0, self.frame.size.height - self.labelHeight, self.frame.size.width, self.labelHeight)];
+}
+
+-(void)setLabelHeight:(CGFloat)labelHeight
+{
+    _labelHeight = labelHeight;
+    [self correctLabelViews];
 }
 
 -(void)setBlurredImageViewAlpha:(CGFloat)alpha
 {
     [self.blurredImageView setAlpha:alpha];
-    //[self.transparentNameView setAlpha:1 - alpha];
 }
 
 /*

@@ -78,7 +78,18 @@
 {
     self.numPhotosLoaded ++;
     if (self.numPhotosLoaded >= self.scrollViewArray.count) {
+        [(UIActivityIndicatorView *)(self.blackView.subviews.firstObject) stopAnimating];
         [self.blackView removeFromSuperview];
+        [UIView animateWithDuration:.3 animations:^{
+            for (int i = 0; i < self.scrollViewArray.count; i++) {
+                FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
+                CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
+                [v setFrame:CGRectMake(0, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
+            }
+            //[self.blackView setAlpha:0.0];
+        } /*completion:^(BOOL finished) {
+            [self.blackView removeFromSuperview];
+        }*/];
     }
 }
 
@@ -134,9 +145,10 @@
 
 -(CGRect)frameForCardViewAtIndex:(NSInteger)index isInUpState:(BOOL)isInUpState
 {
-    CGRect frame = CGRectMake(0, index * self.contentView.frame.size.height/12, self.contentView.frame.size.width, self.contentView.frame.size.height/2);
+    CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
+    CGRect frame = CGRectMake(0, index * nameHeight, self.contentView.frame.size.width, self.screenWidth);
     if (isInUpState) {
-        frame.origin.y -= frame.size.height - self.contentView.frame.size.height/12;
+        frame.origin.y -= frame.size.height - nameHeight;
     }
     return frame;
 }
@@ -163,6 +175,7 @@
         [sender setTranslation:CGPointZero inView:self.view];
     } else if (sender.state == UIGestureRecognizerStateEnded) {
         if (self.current == nil) return;
+        
         CGPoint location = [sender locationInView:self.contentView];
         int diff = abs(self.firstY - location.y);
         if (self.firstY < location.y) {
@@ -170,23 +183,28 @@
         } else {
             diff -= [sender velocityInView:self.view].y/10;
         }
-        CGRect newFrame = CGRectMake(0, self.current.index * self.contentView.frame.size.height/12, self.contentView.frame.size.width, self.contentView.frame.size.height/2);
+        CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
+        CGRect newFrame = CGRectMake(0, self.current.index * nameHeight, self.contentView.frame.size.width, self.screenWidth);
         CGFloat newAlpha = 0.;
-        if (diff < self.current.frame.size.height/2) {
+        if (diff < self.screenWidth/2) {
             if (location.y > self.firstY) {
                 newAlpha = 1.;
-                newFrame.origin.y -= self.current.frame.size.height - self.contentView.frame.size.height/12;
+                newFrame.origin.y -= self.current.frame.size.height - nameHeight;
             }
         } else {
             if (location.y <= self.firstY) {
-                newFrame.origin.y -= self.current.frame.size.height - self.contentView.frame.size.height/12;
+                newFrame.origin.y -= self.current.frame.size.height - nameHeight;
                 newAlpha = 1.;
                 self.currentPage ++;
             } else {
                 self.currentPage --;
             }
         }
-        CGFloat animationTime = abs(newFrame.origin.y - self.current.frame.origin.y) * 1/[sender velocityInView:self.view].y;
+        
+        CGFloat absVelocityInView = abs([sender velocityInView:self.view].y);
+        NSLog(@"%f", absVelocityInView);
+        if (absVelocityInView < 100) absVelocityInView = 400;
+        CGFloat animationTime = abs(newFrame.origin.y - self.current.frame.origin.y) * 1/absVelocityInView;
         [UIView animateWithDuration:animationTime animations:^{
             [self.current setFrame:newFrame];
             [self.current setBlurredImageViewAlpha:newAlpha];
@@ -201,11 +219,12 @@
 {
     [super viewWillAppear:animated];
     
+    // beginning of toolbar code
     self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
-    [self.toolbar setBarTintColor:[UIColor colorWithRed:22/255. green:31/255. blue:40/255. alpha:1.0]]; //rgba(44, 62, 80,1.0)
+    [self.toolbar setBarTintColor:[UIColor colorWithRed:39/255. green:144/255. blue:210/255. alpha:1.]]; //rgba(44, 62, 80,1.0)
     [self.toolbar setTranslucent:NO];
-    NSString *superlativeString = @"Best Dick...";
-    UIFont *myFont = [UIFont fontWithName:@"Futura-CondensedMedium" size:30];
+    NSString *superlativeString = @"Best Dick";
+    UIFont *myFont = [UIFont fontWithName:@"Futura-Medium" size:25];
     CGSize size = [superlativeString sizeWithAttributes:@{NSFontAttributeName:myFont}];
     CGFloat verticalPadding = (self.toolbar.frame.size.height - size.height)/2;
     UILabel *superlativeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, verticalPadding, self.toolbar.frame.size.width, self.toolbar.frame.size.height - 2 * verticalPadding)];
@@ -213,6 +232,7 @@
     [superlativeLabel setFont:myFont];
     [superlativeLabel setTextAlignment:NSTextAlignmentCenter];
     [superlativeLabel setTextColor:[UIColor whiteColor]];
+    
     UIView *labelBckgdView = [[UIView alloc] initWithFrame:CGRectMake(0, 10, self.view.bounds.size.width, self.toolbar.frame.size.height - 10)];
     [labelBckgdView addSubview:superlativeLabel];
     UIBarButtonItem *superlative = [[UIBarButtonItem alloc] initWithCustomView:labelBckgdView];
@@ -222,19 +242,24 @@
                           [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                           nil];
     [self.view addSubview:self.toolbar];
+    // end of toolbar code
     
+    // beginning of content code
     [self.contentView setFrame:CGRectMake(0, self.toolbar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.toolbar.frame.size.height)];
     [self.view addSubview:self.contentView];
+    CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
     for (int i = 0; i < self.scrollViewArray.count; i++) {
-        UIView *sv = [self.scrollViewArray objectAtIndex:i];
-        [sv setFrame:CGRectMake(0, (i)*self.contentView.frame.size.height/12, self.contentView.frame.size.width, self.contentView.frame.size.height/2)];
+        FriendCardView *sv = [self.scrollViewArray objectAtIndex:i];
+        [sv setLabelHeight:nameHeight];
+        CGFloat x = 2*(i % 2) - 1;
+        [sv setFrame:CGRectMake(x * self.screenWidth, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
     }
     
     self.currentPage = 0;
     
     self.blackView = [[UIView alloc] initWithFrame:self.contentView.bounds];
     [self.blackView setBackgroundColor:[UIColor blackColor]];
-    [self.view addSubview:self.blackView];
+    [self.contentView addSubview:self.blackView];
     
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
     [indicator setFrame:CGRectInset(self.contentView.bounds, 100, 100)];
@@ -280,34 +305,6 @@
         
     }
 }
-
--(void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-}
-
--(void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-}
-
-/*-(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    FriendCardView *sv = (FriendCardView *)scrollView;
-    if (scrollView.contentOffset.y != 0) {
-        self.currentPage = sv.index + 1;
-        NSLog(@"%d", self.currentPage);
-    } else {
-        self.currentPage = sv.index;
-    }
-    int scrollTempCurrentPage = (self.currentPage == self.scrollViewArray.count - 1) ? self.currentPage - 1 : self.currentPage;
-    for (int i = 0; i < self.scrollViewArray.count; i++) {
-        if (i != scrollTempCurrentPage && i != scrollTempCurrentPage -1)
-            [[self.scrollViewArray objectAtIndex:i] setUserInteractionEnabled:NO];
-        else
-            [[self.scrollViewArray objectAtIndex:i] setUserInteractionEnabled:YES];
-    }
-}*/
 
 - (void)didReceiveMemoryWarning
 {

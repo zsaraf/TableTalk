@@ -10,7 +10,7 @@
 #import "SocketUtil.h"
 #import "AppDelegate.h"
 
-#define GRAPH_SEARCH_URL_FORMAT @"https://graph.facebook.com/%@/picture?width=320&height=320&return_ssl_resources=1"
+#define GRAPH_SEARCH_URL_FORMAT @"https://graph.facebook.com/%@/picture?width=640&height=640&return_ssl_resources=1"
 
 @interface TableTalkUtil : NSObject
 

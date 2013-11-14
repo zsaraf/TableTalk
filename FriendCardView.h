@@ -24,5 +24,6 @@
 @property (nonatomic, assign) NSInteger index;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) NSString *fbID;
+@property (nonatomic, assign) CGFloat labelHeight;
 
 @end
