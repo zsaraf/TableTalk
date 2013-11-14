@@ -160,13 +160,19 @@
         self.firstY = [sender locationInView:self.contentView].y;
     } else if (sender.state == UIGestureRecognizerStateChanged) {
         CGPoint location = [sender locationInView:self.contentView];
+        CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
         if (self.current == nil) {
             int index = (location.y < self.firstY) ? self.currentPage : self.currentPage - 1;
             if (index < 0 || index >= self.scrollViewArray.count - 1) return;
             self.current = [self.scrollViewArray objectAtIndex:index];
+        } else {
+            if (abs(location.y - self.firstY) > self.current.frame.size.height - nameHeight) {
+                [sender setTranslation:CGPointZero inView:self.view];
+                return;
+            }
         }
         [self.current setFrame:CGRectOffset(self.current.frame, 0, [sender translationInView:self.view].y)];
-        CGFloat alpha = abs(location.y - self.firstY)/self.current.frame.size.height;
+        CGFloat alpha = abs(location.y - self.firstY)/(self.current.frame.size.height - nameHeight);
         if (location.y < self.firstY) alpha = 1- alpha;
         
         [self.current setBlurredImageViewAlpha:1 - alpha];
@@ -252,6 +258,8 @@
         FriendCardView *sv = [self.scrollViewArray objectAtIndex:i];
         [sv setLabelHeight:nameHeight];
         CGFloat x = 2*(i % 2) - 1;
+        if (i == 0) sv.blurredImageViewAlpha = 0.;
+        else sv.blurredImageViewAlpha = 1.0;
         [sv setFrame:CGRectMake(x * self.screenWidth, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
     }
     

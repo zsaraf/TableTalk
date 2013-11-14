@@ -27,6 +27,7 @@
 @implementation FriendCardView
 
 @synthesize labelHeight = _labelHeight;
+@synthesize blurredImageViewAlpha = _blurredImageViewAlpha;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -42,6 +43,7 @@
 {
     if (self = [super init])
     {
+        self.clipsToBounds = YES;
         self.fbID = fbID;
         self.imageData = [[NSMutableData alloc] init];
         NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:GRAPH_SEARCH_URL_FORMAT, fbID]];
@@ -64,7 +66,6 @@
         // Run network request asynchronously
         self.connection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];*/
         self.index = index;
-        [self setClipsToBounds:NO];
         self.imgView = [[UIImageView alloc] init];
         [self.imgView setContentMode:UIViewContentModeScaleToFill];
         [self addSubview:self.imgView];
@@ -113,7 +114,8 @@
 -(void)setFrame:(CGRect)frame
 {
     [super setFrame:frame];
-    [self.imgView setFrame:self.bounds];
+    //[self.imgView setFrame:self.bounds];
+    [self.imgView setFrame:CGRectMake(0, self.frame.size.height/2* self.blurredImageViewAlpha, self.frame.size.width, self.frame.size.height)];
     [self correctLabelViews];
 }
 
@@ -129,9 +131,12 @@
     [self correctLabelViews];
 }
 
--(void)setBlurredImageViewAlpha:(CGFloat)alpha
+-(void)setBlurredImageViewAlpha:(CGFloat)blurredImageViewAlpha
 {
-    [self.blurredImageView setAlpha:alpha];
+    _blurredImageViewAlpha = blurredImageViewAlpha;
+    if (!self.blurredImageView || !self.imgView || CGSizeEqualToSize(self.bounds.size, CGSizeZero)) return;
+    [self.blurredImageView setAlpha:blurredImageViewAlpha];
+    [self.imgView setFrame:CGRectMake(0, self.frame.size.height/2* blurredImageViewAlpha, self.frame.size.width, self.frame.size.height)];
 }
 
 /*

@@ -18,12 +18,12 @@
 @interface FriendCardView : UIView <NSURLConnectionDelegate>
 
 -(id)initWithFBId:(NSString *)fbID andIndex:(NSInteger)index isLast:(BOOL)isLast;
--(void)setBlurredImageViewAlpha:(CGFloat)alpha;
 
 @property (nonatomic, weak) id<FriendCardViewDelegate> delegate;
 @property (nonatomic, assign) NSInteger index;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) NSString *fbID;
 @property (nonatomic, assign) CGFloat labelHeight;
+@property (nonatomic, assign) CGFloat blurredImageViewAlpha;
 
 @end

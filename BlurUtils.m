@@ -16,6 +16,7 @@
 {
     
     UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+    NSLog(@"%f %f", size.width, size.height);
     [imgView drawViewHierarchyInRect:imgView.frame afterScreenUpdates:YES];
     
     UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
