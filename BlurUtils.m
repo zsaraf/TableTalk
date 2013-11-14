@@ -27,4 +27,18 @@
     return blurredSnapshotImage;
 }
 
++(UIImage *)drawBlur:(UIImageView *)imgView size:(CGSize)size
+{
+    
+    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+    NSLog(@"%f %f", size.width, size.height);
+    [imgView drawViewHierarchyInRect:imgView.frame afterScreenUpdates:YES];
+    
+    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage *blurredSnapshotImage = [snapshotImage applyLightEffect];
+    UIGraphicsEndImageContext();
+    
+    return blurredSnapshotImage;
+}
+
 @end

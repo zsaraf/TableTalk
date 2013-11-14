@@ -22,6 +22,7 @@
 @property (nonatomic, weak) id<FriendCardViewDelegate> delegate;
 @property (nonatomic, assign) NSInteger index;
 @property (nonatomic, strong) UIImageView *blurredImageView;
+@property (nonatomic, strong) UIView *blurredImageViewWrapper;
 @property (nonatomic, strong) NSString *fbID;
 @property (nonatomic, assign) CGFloat labelHeight;
 @property (nonatomic, assign) CGFloat blurredImageViewAlpha;

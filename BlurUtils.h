@@ -11,5 +11,7 @@
 @interface BlurUtils : NSObject
 
 +(UIImage *)drawBlur:(UIImageView *)imgView size:(CGSize)size cropRect:(CGRect)cropRect;
++(UIImage *)drawBlur:(UIImageView *)imgView size:(CGSize)size;
+
 
 @end

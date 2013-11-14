@@ -77,8 +77,12 @@
         [self.transparentNameView setAlpha:1.];
         [self addSubview:self.transparentNameView];
         
+        self.blurredImageViewWrapper = [[UIView alloc] init];
+        [self.blurredImageViewWrapper setClipsToBounds:YES];
+        [self addSubview:self.blurredImageViewWrapper];
+        
         self.blurredImageView = [[UIImageView alloc] init];
-        [self addSubview:self.blurredImageView];
+        [self.blurredImageViewWrapper addSubview:self.blurredImageView];
         
         if (!self.name) self.name = @"";
         
@@ -90,20 +94,6 @@
         [self insertSubview:self.nameLabel aboveSubview:self.transparentNameView];
     }
     return self;
-}
-
--(UIImage *)drawBlur
-{
-    
-    UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, self.window.screen.scale);
-    [self.imgView drawViewHierarchyInRect:self.imgView.frame afterScreenUpdates:YES];
-    
-    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIImage *blurredSnapshotImage = [snapshotImage applyLightEffect];
-    UIGraphicsEndImageContext();
-    blurredSnapshotImage = [blurredSnapshotImage cropFromRect:CGRectMake(0, 5*snapshotImage.size.height/6, snapshotImage.size.width, snapshotImage.size.height/6)];
-    
-    return blurredSnapshotImage;
 }
 
 -(void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
@@ -134,7 +124,7 @@
     }
     
     [self.imgView setImage:self.img];
-    [self.blurredImageView setImage:[BlurUtils drawBlur:self.imgView size:self.bounds.size cropRect:CGRectMake(0, 5/6.0, 1, 1/6.0)]];
+    [self.blurredImageView setImage:[BlurUtils drawBlur:self.imgView size:self.bounds.size]];
     [self.delegate didFinishLoadingImage:self.img forIndex:self.index];
 }
 
@@ -148,8 +138,9 @@
 -(void)correctLabelViews
 {
     CGRect frame = CGRectMake(0, self.frame.size.height - self.labelHeight, self.frame.size.width, self.labelHeight);
-    [self.blurredImageView setFrame:frame];
     [self.transparentNameView setFrame:frame];
+    [self.blurredImageView setFrame:CGRectMake(0, -self.frame.size.height + self.frame.size.height/2* self.blurredImageViewAlpha + self.labelHeight, self.frame.size.width, self.frame.size.height)];
+    [self.blurredImageViewWrapper setFrame:frame];
     
     CGRect labelFrame = self.nameLabel.frame;
     labelFrame.origin.y = self.frame.size.height - self.labelHeight;
@@ -168,8 +159,9 @@
 {
     _blurredImageViewAlpha = blurredImageViewAlpha;
     if (!self.blurredImageView || !self.imgView || CGSizeEqualToSize(self.bounds.size, CGSizeZero)) return;
-    [self.blurredImageView setAlpha:blurredImageViewAlpha];
+    [self.blurredImageViewWrapper setAlpha:blurredImageViewAlpha];
     [self.imgView setFrame:CGRectMake(0, self.frame.size.height/2* blurredImageViewAlpha, self.frame.size.width, self.frame.size.height)];
+    [self.blurredImageView setFrame:CGRectMake(0, -self.frame.size.height + self.frame.size.height/2* blurredImageViewAlpha + self.labelHeight, self.frame.size.width, self.frame.size.height)];
     if (blurredImageViewAlpha == 0) {
         [self bringSubviewToFront:self.nameLabel];
     }

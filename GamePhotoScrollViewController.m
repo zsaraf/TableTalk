@@ -78,6 +78,10 @@
 {
     self.numPhotosLoaded ++;
     if (self.numPhotosLoaded >= self.scrollViewArray.count) {
+        for (int i = 0; i < self.scrollViewArray.count; i++) {
+            FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
+            if (i != 0) [v setBlurredImageViewAlpha:1.0];
+        }
         [(UIActivityIndicatorView *)(self.blackView.subviews.firstObject) stopAnimating];
         [self.blackView removeFromSuperview];
         [UIView animateWithDuration:.3 animations:^{
@@ -85,7 +89,6 @@
                 FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
                 CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
                 [v setFrame:CGRectMake(0, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
-                
             }
         } completion:^(BOOL finished) {
             for (int i = 0; i < self.scrollViewArray.count; i++) {
@@ -233,7 +236,7 @@
     self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
     [self.toolbar setBarTintColor:[UIColor colorWithRed:39/255. green:144/255. blue:210/255. alpha:1.]]; //rgba(44, 62, 80,1.0)
     [self.toolbar setTranslucent:NO];
-    NSString *superlativeString = @"Best Dick";
+    NSString *superlativeString = @"Best Smile";
     UIFont *myFont = [UIFont fontWithName:@"Futura-Medium" size:25];
     CGSize size = [superlativeString sizeWithAttributes:@{NSFontAttributeName:myFont}];
     CGFloat verticalPadding = (self.toolbar.frame.size.height - size.height)/2;
@@ -262,8 +265,9 @@
         FriendCardView *sv = [self.scrollViewArray objectAtIndex:i];
         [sv setLabelHeight:nameHeight];
         CGFloat x = 2*(i % 2) - 1;
-        if (i == 0) sv.blurredImageViewAlpha = 0.;
-        else sv.blurredImageViewAlpha = 1.0;
+        //if (i == 0) sv.blurredImageViewAlpha = 0.;
+        //else sv.blurredImageViewAlpha = 1.0;
+        sv.blurredImageViewAlpha = 0.;
         [sv setFrame:CGRectMake(x * self.screenWidth, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
     }
     
