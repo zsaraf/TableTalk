@@ -20,12 +20,12 @@
 
 @interface SocketUtil : NSObject <SocketIODelegate>
 
--(id)initWithDelegate:(id<SocketUtilDelegate>)delegate;
+-(id)initWithDelegate:(id<SocketUtilDelegate>)delegate andGroupId:(NSString *)groupId;
 -(void)sendBeginGameMessage;
 -(void)sendChoseFriendMessage:(NSString *)friendId;
 -(void)sendChoseWinnerMessage:(NSString *)friendId;
 
-
+@property (nonatomic, strong) NSString *groupId;
 @property (nonatomic, strong) id<SocketUtilDelegate> delegate;
 
 @end

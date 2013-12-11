@@ -91,11 +91,9 @@
                 [v setFrame:CGRectMake(0, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
             }
         } completion:^(BOOL finished) {
-            for (int i = 0; i < self.scrollViewArray.count; i++) {
-                FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
-                CGFloat alpha = (i == 0) ? 0 : 1;
-                [v setBlurredImageViewAlpha:alpha];
-            }
+            [UIView animateWithDuration:.5 animations:^{
+                [[self.scrollViewArray firstObject] setBlurredImageViewAlpha:0.0];
+            }];
         }];
     }
 }

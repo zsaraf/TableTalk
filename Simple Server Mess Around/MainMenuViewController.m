@@ -11,12 +11,15 @@
 #include <FacebookSDK/FacebookSDK.h>
 #include "TableTalkUtil.h"
 #include "WaitForStartViewController.h"
+#import "BlurUtils.h"
 
 @interface MainMenuViewController ()
 
 @property (nonatomic, strong) SocketIO *socketIO;
 @property (nonatomic, strong) NSMutableArray *friendIds;
 @property (nonatomic, strong) CLLocationManager *locationManager;
+@property (nonatomic, strong) UIImageView *bckgdImageView;
+@property (nonatomic, strong) UIImageView *blurredBckgdImageView;
 
 @end
 
@@ -78,7 +81,6 @@
             NSLog(@"NUM FRIENDS: %d", self.friendIds.count);
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:self.friendIds forKey:@"friendIds"];
-            NSLog(@"stored");
             /*// Construct a PFUser query that will find friends whose facebook ids
             // are contained in the current user's friend list.
             PFQuery *friendQuery = [PFUser query];
@@ -91,6 +93,50 @@
     }];
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    UIImage *img = [UIImage imageNamed:@"NewFriendsTablefeb25th.jpg"];
+    self.bckgdImageView = [[UIImageView alloc] initWithImage:img];
+    UIImage *blurredImg = [BlurUtils drawBlur:self.bckgdImageView size:self.view.bounds.size withBlurEffect:BlurUtilsExtraLightEffect];
+    self.blurredBckgdImageView = [[UIImageView alloc] initWithImage:blurredImg];
+    [self.blurredBckgdImageView setAlpha:0];
+    [self.view addSubview:self.blurredBckgdImageView];
+    [self.view addSubview:self.bckgdImageView];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 70, 70)];
+    [button setBackgroundImage:[UIImage imageNamed:@"TableTalkButton.png"] forState:UIControlStateNormal];
+    [button setCenter:CGPointMake(self.view.frame.size.width/2, 3.5*self.view.frame.size.height/4)];
+    [button setAlpha:0.];
+    [button addTarget:self action:@selector(goButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 5, self.view.frame.size.width, 100)];
+    [label setText:@"Table Talk"];
+    [label setFont:[UIFont fontWithName:@"Futura-Medium" size:40]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setAlpha:0];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [UIView animateWithDuration:1 animations:^{
+        CGFloat offset = self.bckgdImageView.frame.size.width - self.view.frame.size.width;
+        CGRect frame = self.bckgdImageView.frame;
+        [self.bckgdImageView setFrame:CGRectOffset(frame, -1 * offset, 0)];
+        [self.blurredBckgdImageView setFrame:CGRectOffset(frame, -1 * offset, 0)];
+    } completion:^(BOOL finished) {
+        [self.view bringSubviewToFront:self.blurredBckgdImageView];
+        [self.view addSubview:button];
+        [self.view addSubview:label];
+        [UIView animateWithDuration:.6 animations:^{
+            [self.blurredBckgdImageView setAlpha:.6];
+            [button setAlpha:1.];
+            [label setAlpha:1.];
+        }];
+    }];
+    
+}
+
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     NSLog(@"updating locations");
@@ -98,7 +144,16 @@
 
 -(IBAction)goButtonPressed:(id)sender
 {
-    [TableTalkUtil appDelegate].socket = [[SocketUtil alloc] initWithDelegate:self];
+    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+        if (!error) {
+            [PFCloud callFunctionInBackground:@"findNearestGameOrMake"
+                               withParameters:[NSDictionary dictionaryWithObjectsAndKeys:geoPoint, @"location", nil]
+                                        block:^(id object, NSError *error) {
+                                            NSLog(@"%@ %@", object, error);
+                                            [TableTalkUtil appDelegate].socket = [[SocketUtil alloc] initWithDelegate:self andGroupId:object];
+                                        }];
+        }
+    }];
 }
 
 -(void)socketDidConnect

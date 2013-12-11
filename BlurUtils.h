@@ -8,10 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+typedef enum {
+    BlurUtilsLightEffect = 0,
+    BlurUtilsExtraLightEffect = 1
+} BlurUtilsEffect;
+
 @interface BlurUtils : NSObject
 
-+(UIImage *)drawBlur:(UIImageView *)imgView size:(CGSize)size cropRect:(CGRect)cropRect;
-+(UIImage *)drawBlur:(UIImageView *)imgView size:(CGSize)size;
++(UIImage *)drawBlur:(UIImageView *)imgView size:(CGSize)size cropRect:(CGRect)cropRect withBlurEffect:(BlurUtilsEffect)effect;
++(UIImage *)drawBlur:(UIImageView *)imgView size:(CGSize)size withBlurEffect:(BlurUtilsEffect)effect;
 
 
 @end

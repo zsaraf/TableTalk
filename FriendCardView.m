@@ -124,7 +124,7 @@
     }
     
     [self.imgView setImage:self.img];
-    [self.blurredImageView setImage:[BlurUtils drawBlur:self.imgView size:self.bounds.size]];
+    [self.blurredImageView setImage:[BlurUtils drawBlur:self.imgView size:self.bounds.size withBlurEffect:BlurUtilsLightEffect]];
     [self.delegate didFinishLoadingImage:self.img forIndex:self.index];
 }
 

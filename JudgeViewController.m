@@ -11,6 +11,7 @@
 #import "SuperlativeCardView.h"
 #import "SDWebImageManager.h"
 #import "BlurredWaitingForPlayersToFinishView.h"
+#import "JudgingSelectorChosenFriendCard.h"
 
 #define ENABLED_CONSTANT .7817
 
@@ -22,6 +23,11 @@
 @property (nonatomic, assign) NSInteger currentlySelected;
 @property (nonatomic, strong) NSMutableArray *playerViews;
 @property (nonatomic, assign) BOOL hasChosen;
+@property (nonatomic, strong) NSMutableDictionary *chosenPhotosDictionary;
+@property (nonatomic, strong) UIScrollView *chosenPhotosScrollView;
+@property (nonatomic, assign) CGFloat screenWidth;
+
+@property (nonatomic, strong) NSMutableArray *chosenPhotosImageViews;
 
 @end
 
@@ -106,7 +112,12 @@
 
 -(IBAction)screenDoubleTapped:(UITapGestureRecognizer *)sender
 {
-    SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
+    // MUST UNCOMMENT THIS --ZWS
+    //SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
+ 
+    // MUST REMOVE THIS, ONLY USED FOR FAST DEBUGGING. --ZWS
+    SuperlativeCardView *v = [self.views firstObject];
+    
     
     if (v.index != self.currentlySelected) {
         [self screenTapped:sender];
@@ -117,6 +128,14 @@
         }
     }
 }
+
+-(CGFloat)screenWidth
+{
+    CGFloat screenWidth = [[UIScreen mainScreen] bounds].size.width;
+    return screenWidth;
+}
+
+-(void)setScreenWidth:(CGFloat)screenWidth {}
 
 -(void)displayDownloadedImages
 {
@@ -139,8 +158,64 @@
             }
         }
         for (UIView *view in self.playerViews) [view setAlpha:1.];
+    } // no necessary completion thing usually MUST REMOVE THIS --ZWS all of completion method (figure out what else to do)
+    completion:^(BOOL finished) {
+        self.chosenPhotosDictionary = [[NSMutableDictionary alloc] init];
+        for (NSString *key in self.photosDictionary) {
+            [self.chosenPhotosDictionary setObject:[self.photosDictionary objectForKey:key] forKey:key];
+        }
+        
+        [self createScrollViewWithChosenPhotos];
+        [UIView animateWithDuration:.3 animations:^{
+            for (UIView *view in self.playerViews) [view setAlpha:0.];
+            [self.chosenPhotosScrollView setAlpha:1.0];
+        }];
     }];
+}
+
+-(void)createScrollViewWithChosenPhotos
+{
+    // MAKE SURE TO CHECK WHICH ARRAY IS BEING USED --ZWS
+    self.chosenPhotosScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height/4, self.view.frame.size.width, self.view.frame.size.width)];
+    [self.chosenPhotosScrollView setPagingEnabled:YES];
+    [self.chosenPhotosScrollView setDelegate:self];
+    [self.chosenPhotosScrollView setContentSize:CGSizeMake(self.view.frame.size.width, self.view.frame.size.width * self.chosenPhotosDictionary.count)];
+    [self.chosenPhotosScrollView setClipsToBounds:NO];
+    [self.chosenPhotosScrollView setAlpha:0.];
+    [self.view insertSubview:self.chosenPhotosScrollView atIndex:0];
     
+    self.chosenPhotosImageViews = [[NSMutableArray alloc] init];
+    
+    int counter = 0;
+    for (NSString *key in self.chosenPhotosDictionary) {
+        UIImage *img = [self.chosenPhotosDictionary objectForKey:key];
+        
+        JudgingSelectorChosenFriendCard *v = [[JudgingSelectorChosenFriendCard alloc] initWithFrame:CGRectMake(0, counter * self.view.frame.size.width, self.view.frame.size.width, self.view.frame.size.width) image:img playerFacebookId:key chosenFacebookId:key];
+        [self.chosenPhotosScrollView addSubview:v];
+        [self.chosenPhotosImageViews addObject:v];
+        if (counter == 0) [v setBlurredImageViewAlpha:0.0];
+        
+        counter++;
+    }
+    
+}
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    NSInteger currentPage = ((NSInteger)scrollView.contentOffset.y)/((NSInteger)scrollView.frame.size.height);
+    
+    CGFloat alpha = fmodf(scrollView.contentOffset.y, scrollView.frame.size.height) / scrollView.frame.size.height;
+    
+    for (int i = currentPage - 1; i <= currentPage + 1; i++) {
+        if (i >= 0 && i < self.chosenPhotosImageViews.count) {
+            JudgingSelectorChosenFriendCard *v = [self.chosenPhotosImageViews objectAtIndex:i];
+            if (i == currentPage) {
+                [v setBlurredImageViewAlpha:alpha];
+            } else {
+                [v setBlurredImageViewAlpha:1 - alpha];
+            }
+        }
+    }
 }
 
 -(SuperlativeCardView *)getSuperlativeCardForLocationInView:(CGPoint)locationInView
@@ -154,7 +229,11 @@
 
 -(IBAction)screenTapped:(UITapGestureRecognizer *)sender
 {
-    SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
+    // MUST UNCOMMENT THIS --ZWS
+    //SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
+    
+    // MUST REMOVE THIS, ONLY USED FOR FAST DEBUGGING. --ZWS
+    SuperlativeCardView *v = [self.views firstObject];
     
     if (v) {
         self.currentlySelected = v.index;
@@ -182,6 +261,15 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // MUST REMOVE THIS, ONLY BEING USED FOR DEBUGGING. --ZWS
+    [self screenTapped:nil];
+    [self screenDoubleTapped:nil];
 }
 
 - (void)didReceiveMemoryWarning

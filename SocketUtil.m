@@ -17,12 +17,13 @@
 
 @implementation SocketUtil
 
--(id)initWithDelegate:(id<SocketUtilDelegate>)delegate
+-(id)initWithDelegate:(id<SocketUtilDelegate>)delegate andGroupId:(NSString *)groupId
 {
     self = [super init];
     if (self) {
         self.socketIO = [[SocketIO alloc] initWithDelegate:self];
         self.delegate = delegate;
+        self.groupId = groupId;
         [self.socketIO connectToHost:@"54.213.192.50" onPort:80];
     }
     return self;
@@ -31,8 +32,7 @@
 - (void) socketIODidConnect:(SocketIO *)socket
 {
     NSLog(@"connected");
-    
-    [self.socketIO sendEvent:@"joinTable" withData:[NSDictionary dictionaryWithObjectsAndKeys: @"prat", @"groupID", [[NSUserDefaults standardUserDefaults] objectForKey:@"friendIds"], @"friends", [[PFUser currentUser] objectForKey:@"fbId"],@"userID", nil]];
+    [self.socketIO sendEvent:@"joinTable" withData:[NSDictionary dictionaryWithObjectsAndKeys: self.groupId, @"groupID", [[NSUserDefaults standardUserDefaults] objectForKey:@"friendIds"], @"friends", [[PFUser currentUser] objectForKey:@"fbId"],@"userID", nil]];
     if ([self.delegate respondsToSelector:@selector(socketDidConnect)]) {
         [self.delegate socketDidConnect];
     }

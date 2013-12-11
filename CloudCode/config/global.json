@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Table Talk": {
+            "applicationId": "3l5uX1fxPZfceCQ4SbOzgKNlra4DsJnXp7MUXFkE", 
+            "masterKey": "XzU8xfEpqf8eSgsfVVq4nf3cFBnt5cme0oJor9yu"
+        }, 
+        "_default": {
+            "link": "Table Talk"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.13"
+    }
+}

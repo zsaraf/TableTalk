@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "TableTalkUtil.h"
 
-@interface JudgeViewController : UIViewController <SocketUtilDelegate>
+@interface JudgeViewController : UIViewController <SocketUtilDelegate, UIScrollViewDelegate>
 
 -(id)initWithPlayers:(NSArray *)players superlatives:(NSArray *)superlatives;
 

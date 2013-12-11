@@ -39,7 +39,7 @@
         self.img = [img cropFromRect:CGRectMake(0, img.size.height/2 - cropHeight/2, img.size.width, cropHeight)];
         self.imgView = [[UIImageView alloc] initWithFrame:self.bounds];
         [self.imgView setImage:self.img];
-        self.blurredImg = [BlurUtils drawBlur:self.imgView size:self.bounds.size cropRect:CGRectMake(0, 0, 1, 1)];
+        self.blurredImg = [BlurUtils drawBlur:self.imgView size:self.bounds.size cropRect:CGRectMake(0, 0, 1, 1) withBlurEffect:BlurUtilsLightEffect];
         self.blurredImgView = [[UIImageView alloc] initWithFrame:self.bounds];
         [self.blurredImgView setImage:self.blurredImg];
         [self addSubview:self.blurredImgView];

@@ -49,6 +49,7 @@
 		92431371180C816100A682D0 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92431370180C816100A682D0 /* FacebookSDK.framework */; };
 		924E74241818D8CD00585077 /* WinnerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 924E74231818D8CD00585077 /* WinnerViewController.m */; };
 		924E74271818E3C700585077 /* SyncNearbyFriendsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 924E74261818E3C700585077 /* SyncNearbyFriendsViewController.m */; };
+		9278EA5B183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9278EA5A183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.m */; };
 		92A6DF0E180F9BB10009087C /* WaitForJudgeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92A6DF0D180F9BB10009087C /* WaitForJudgeViewController.m */; };
 		92A8CC2417E7278700B32FC1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92A8CC2317E7278700B32FC1 /* Foundation.framework */; };
 		92A8CC2617E7278700B32FC1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92A8CC2517E7278700B32FC1 /* CoreGraphics.framework */; };
@@ -83,6 +84,9 @@
 		92CE2805180CC1280089B2ED /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27F6180CC1280089B2ED /* UIImage+WebP.m */; };
 		92CE2806180CC1280089B2ED /* UIImageView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27F8180CC1280089B2ED /* UIImageView+WebCache.m */; };
 		92CE2809180CC68C0089B2ED /* WaitForStartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE2808180CC68C0089B2ED /* WaitForStartViewController.m */; };
+		92DC83CC1848511900ECB495 /* TableTalkButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 92DC83CB1848511900ECB495 /* TableTalkButton.png */; };
+		92DC83CF1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92DC83CD1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg */; };
+		92DC83D01848513C00ECB495 /* NewFriendsTablefeb25th.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92DC83CE1848513C00ECB495 /* NewFriendsTablefeb25th.jpg */; };
 		92DE01D8181F9759007F3657 /* FriendCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92DE01D7181F9759007F3657 /* FriendCardView.m */; };
 		92EB67641811E9C200CCCF8D /* JudgeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EB67631811E9C200CCCF8D /* JudgeViewController.m */; };
 		92EB67681811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EB67671811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.m */; };
@@ -171,6 +175,8 @@
 		924E74231818D8CD00585077 /* WinnerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WinnerViewController.m; sourceTree = "<group>"; };
 		924E74251818E3C700585077 /* SyncNearbyFriendsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncNearbyFriendsViewController.h; path = ../SyncNearbyFriendsViewController.h; sourceTree = "<group>"; };
 		924E74261818E3C700585077 /* SyncNearbyFriendsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SyncNearbyFriendsViewController.m; path = ../SyncNearbyFriendsViewController.m; sourceTree = "<group>"; };
+		9278EA59183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JudgingSelectorChosenFriendCard.h; sourceTree = "<group>"; };
+		9278EA5A183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JudgingSelectorChosenFriendCard.m; sourceTree = "<group>"; };
 		92A6DF0C180F9BB10009087C /* WaitForJudgeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WaitForJudgeViewController.h; path = ../WaitForJudgeViewController.h; sourceTree = "<group>"; };
 		92A6DF0D180F9BB10009087C /* WaitForJudgeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WaitForJudgeViewController.m; path = ../WaitForJudgeViewController.m; sourceTree = "<group>"; };
 		92A8CC2017E7278700B32FC1 /* Table Talk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Table Talk.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -231,6 +237,9 @@
 		92CE27F8180CC1280089B2ED /* UIImageView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+WebCache.m"; sourceTree = "<group>"; };
 		92CE2807180CC68B0089B2ED /* WaitForStartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WaitForStartViewController.h; path = ../WaitForStartViewController.h; sourceTree = "<group>"; };
 		92CE2808180CC68C0089B2ED /* WaitForStartViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = WaitForStartViewController.m; path = ../WaitForStartViewController.m; sourceTree = "<group>"; };
+		92DC83CB1848511900ECB495 /* TableTalkButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TableTalkButton.png; sourceTree = "<group>"; };
+		92DC83CD1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "NewFriendsTablefeb25th@2x.jpg"; sourceTree = "<group>"; };
+		92DC83CE1848513C00ECB495 /* NewFriendsTablefeb25th.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NewFriendsTablefeb25th.jpg; sourceTree = "<group>"; };
 		92DE01D6181F9759007F3657 /* FriendCardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FriendCardView.h; path = ../FriendCardView.h; sourceTree = "<group>"; };
 		92DE01D7181F9759007F3657 /* FriendCardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FriendCardView.m; path = ../FriendCardView.m; sourceTree = "<group>"; };
 		92EB67621811E9C200CCCF8D /* JudgeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JudgeViewController.h; path = ../JudgeViewController.h; sourceTree = "<group>"; };
@@ -369,6 +378,8 @@
 		92A8CC1717E7278700B32FC1 = {
 			isa = PBXGroup;
 			children = (
+				9278EA59183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.h */,
+				9278EA5A183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.m */,
 				92213BBD1820ABA500A4E574 /* UIImage+Crop */,
 				92213BB91820A7BE00A4E574 /* UIImage+ImageEffects */,
 				92213BB518209CAC00A4E574 /* AMBlurView */,
@@ -432,6 +443,7 @@
 		92A8CC2A17E7278700B32FC1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				92DC83CA18484E5F00ECB495 /* images */,
 				92A8CC2B17E7278700B32FC1 /* Table Talk-Info.plist */,
 				92A8CC2C17E7278700B32FC1 /* InfoPlist.strings */,
 				92A8CC2F17E7278700B32FC1 /* main.m */,
@@ -556,6 +568,16 @@
 			path = SDWebImage/SDWebImage;
 			sourceTree = "<group>";
 		};
+		92DC83CA18484E5F00ECB495 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				92DC83CD1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg */,
+				92DC83CE1848513C00ECB495 /* NewFriendsTablefeb25th.jpg */,
+				92DC83CB1848511900ECB495 /* TableTalkButton.png */,
+			);
+			name = images;
+			sourceTree = "<group>";
+		};
 		92EB67651811F6CD00CCCF8D /* ActivityIndicatorAsync */ = {
 			isa = PBXGroup;
 			children = (
@@ -641,10 +663,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				92DC83CC1848511900ECB495 /* TableTalkButton.png in Resources */,
 				9243134C180B3D4D00A682D0 /* LICENSE in Resources */,
 				9243134A180B3D4D00A682D0 /* .gitignore in Resources */,
 				92A8CC3C17E7278700B32FC1 /* Images.xcassets in Resources */,
 				9243134D180B3D4D00A682D0 /* README.md in Resources */,
+				92DC83CF1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg in Resources */,
+				92DC83D01848513C00ECB495 /* NewFriendsTablefeb25th.jpg in Resources */,
 				9243134B180B3D4D00A682D0 /* .gitmodules in Resources */,
 				92A8CC2E17E7278700B32FC1 /* InfoPlist.strings in Resources */,
 				92A8CC3717E7278700B32FC1 /* Main.storyboard in Resources */,
@@ -679,6 +704,7 @@
 				924312FE180B2EC600A682D0 /* NSData+SRB64Additions.m in Sources */,
 				92431352180B3D4D00A682D0 /* SocketIOTransportXHR.m in Sources */,
 				92431320180B2FE700A682D0 /* SBJsonStreamTokeniser.m in Sources */,
+				9278EA5B183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.m in Sources */,
 				92CE27CD180C85550089B2ED /* TableTalkUtil.m in Sources */,
 				92DE01D8181F9759007F3657 /* FriendCardView.m in Sources */,
 				924312FD180B2EC600A682D0 /* base64.c in Sources */,
