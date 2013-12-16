@@ -32,6 +32,8 @@
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet
 {
+    // ZWS-TODO: playerJoined:fbId
+    
     if (![[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"startRound"]) return;
     NSArray *friends = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
     if (friends == nil) {

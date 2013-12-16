@@ -78,7 +78,7 @@
             for (NSDictionary *friendObject in friendObjects) {
                 [self.friendIds addObject:[friendObject objectForKey:@"id"]];
             }
-            NSLog(@"NUM FRIENDS: %d", self.friendIds.count);
+            NSLog(@"NUM FRIENDS: %lu", self.friendIds.count);
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:self.friendIds forKey:@"friendIds"];
             /*// Construct a PFUser query that will find friends whose facebook ids

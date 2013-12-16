@@ -295,6 +295,7 @@
 {
     NSLog(@"photo doubel tapped");
     /*NSInteger friendIndex = self.photoScrollView.contentOffset.x/self.photoScrollView.frame.size.width;
+     // ZWS-TODO Judge will never be in this screen, remove following.
     if (self.isJudging) {
         [[TableTalkUtil appDelegate].socket sendChoseWinnerMessage:[self.card_fbIDs objectAtIndex:friendIndex]];
     } else {
@@ -307,6 +308,8 @@
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet
 {
+    // ZWS-TODO receive playerFinished, and keep stored
+    // ZWS-TODO receive startJudging, and go to waitforjudge
     if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"roundFinished"]) {
         if (self.isJudging) {
             NSString *winner = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"winner"];
