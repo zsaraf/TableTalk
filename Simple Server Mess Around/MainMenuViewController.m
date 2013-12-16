@@ -78,7 +78,7 @@
             for (NSDictionary *friendObject in friendObjects) {
                 [self.friendIds addObject:[friendObject objectForKey:@"id"]];
             }
-            NSLog(@"NUM FRIENDS: %lu", self.friendIds.count);
+            NSLog(@"NUM FRIENDS: %ld", self.friendIds.count);
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:self.friendIds forKey:@"friendIds"];
             /*// Construct a PFUser query that will find friends whose facebook ids
@@ -139,7 +139,7 @@
 
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
-    NSLog(@"updating locations");
+    //NSLog(@"updating locations");
 }
 
 -(IBAction)goButtonPressed:(id)sender
@@ -150,7 +150,7 @@
                                withParameters:[NSDictionary dictionaryWithObjectsAndKeys:geoPoint, @"location", nil]
                                         block:^(id object, NSError *error) {
                                             NSLog(@"%@ %@", object, error);
-                                            [TableTalkUtil appDelegate].socket = [[SocketUtil alloc] initWithDelegate:self andGroupId:object];
+                                            [TableTalkUtil appDelegate].socket = [[SocketUtil alloc] initWithDelegate:  self andGroupId:object];
                                         }];
         }
     }];
@@ -159,6 +159,7 @@
 -(void)socketDidConnect
 {
     WaitForStartViewController *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"waitForStartViewController"];
+    [TableTalkUtil appDelegate].socket.delegate = vc;
     [self.navigationController pushViewController:vc animated:YES];
 }
 

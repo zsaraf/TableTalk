@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		9220569B183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9220569A183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m */; };
-		92213BB418209CA700A4E574 /* AMBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92213BB318209CA700A4E574 /* AMBlurView.m */; };
 		92213BB81820A7B300A4E574 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 92213BB71820A7B300A4E574 /* UIImage+ImageEffects.m */; };
 		92213BBC1820AB8F00A4E574 /* UIImage+Crop.m in Sources */ = {isa = PBXBuildFile; fileRef = 92213BBB1820AB8F00A4E574 /* UIImage+Crop.m */; };
 		922DBFEA1832D68800264D81 /* SuperlativeCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 922DBFE91832D68800264D81 /* SuperlativeCardView.m */; };
@@ -68,7 +67,6 @@
 		92CE27CA180C848D0089B2ED /* SocketUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27C9180C848D0089B2ED /* SocketUtil.m */; };
 		92CE27CD180C85550089B2ED /* TableTalkUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27CC180C85550089B2ED /* TableTalkUtil.m */; };
 		92CE27D6180CAD6A0089B2ED /* GamePhotoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27D5180CAD6A0089B2ED /* GamePhotoScrollViewController.m */; };
-		92CE27D9180CAE6A0089B2ED /* OneFriendPhotoScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27D8180CAE6A0089B2ED /* OneFriendPhotoScrollView.m */; };
 		92CE27F9180CC1280089B2ED /* MKAnnotationView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27DD180CC1280089B2ED /* MKAnnotationView+WebCache.m */; };
 		92CE27FA180CC1280089B2ED /* NSData+GIF.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27DF180CC1280089B2ED /* NSData+GIF.m */; };
 		92CE27FB180CC1280089B2ED /* SDImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27E1180CC1280089B2ED /* SDImageCache.m */; };
@@ -88,8 +86,9 @@
 		92DC83CF1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92DC83CD1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg */; };
 		92DC83D01848513C00ECB495 /* NewFriendsTablefeb25th.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92DC83CE1848513C00ECB495 /* NewFriendsTablefeb25th.jpg */; };
 		92DE01D8181F9759007F3657 /* FriendCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92DE01D7181F9759007F3657 /* FriendCardView.m */; };
+		92E919AD185E9AA400E5460E /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E919AC185E9AA400E5460E /* Player.m */; };
 		92EB67641811E9C200CCCF8D /* JudgeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EB67631811E9C200CCCF8D /* JudgeViewController.m */; };
-		92EB67681811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EB67671811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.m */; };
+		94368415E3374406896B29DD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FA694B38B354E8A8B1EA62E /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -103,10 +102,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		018FC19AF07D4622A18A2F32 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
+		6FA694B38B354E8A8B1EA62E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		92205699183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlurredWaitingForPlayersToFinishView.h; path = ../BlurredWaitingForPlayersToFinishView.h; sourceTree = "<group>"; };
 		9220569A183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BlurredWaitingForPlayersToFinishView.m; path = ../BlurredWaitingForPlayersToFinishView.m; sourceTree = "<group>"; };
-		92213BB218209CA700A4E574 /* AMBlurView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMBlurView.h; sourceTree = "<group>"; };
-		92213BB318209CA700A4E574 /* AMBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AMBlurView.m; sourceTree = "<group>"; };
 		92213BB61820A7B300A4E574 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
 		92213BB71820A7B300A4E574 /* UIImage+ImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ImageEffects.m"; sourceTree = "<group>"; };
 		92213BBA1820AB8F00A4E574 /* UIImage+Crop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Crop.h"; sourceTree = "<group>"; };
@@ -204,8 +203,6 @@
 		92CE27CC180C85550089B2ED /* TableTalkUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TableTalkUtil.m; path = ../TableTalkUtil.m; sourceTree = "<group>"; };
 		92CE27D4180CAD690089B2ED /* GamePhotoScrollViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GamePhotoScrollViewController.h; path = ../GamePhotoScrollViewController.h; sourceTree = "<group>"; };
 		92CE27D5180CAD6A0089B2ED /* GamePhotoScrollViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GamePhotoScrollViewController.m; path = ../GamePhotoScrollViewController.m; sourceTree = "<group>"; };
-		92CE27D7180CAE6A0089B2ED /* OneFriendPhotoScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OneFriendPhotoScrollView.h; path = ../OneFriendPhotoScrollView.h; sourceTree = "<group>"; };
-		92CE27D8180CAE6A0089B2ED /* OneFriendPhotoScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OneFriendPhotoScrollView.m; path = ../OneFriendPhotoScrollView.m; sourceTree = "<group>"; };
 		92CE27DC180CC1280089B2ED /* MKAnnotationView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKAnnotationView+WebCache.h"; sourceTree = "<group>"; };
 		92CE27DD180CC1280089B2ED /* MKAnnotationView+WebCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MKAnnotationView+WebCache.m"; sourceTree = "<group>"; };
 		92CE27DE180CC1280089B2ED /* NSData+GIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+GIF.h"; sourceTree = "<group>"; };
@@ -242,10 +239,10 @@
 		92DC83CE1848513C00ECB495 /* NewFriendsTablefeb25th.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NewFriendsTablefeb25th.jpg; sourceTree = "<group>"; };
 		92DE01D6181F9759007F3657 /* FriendCardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FriendCardView.h; path = ../FriendCardView.h; sourceTree = "<group>"; };
 		92DE01D7181F9759007F3657 /* FriendCardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FriendCardView.m; path = ../FriendCardView.m; sourceTree = "<group>"; };
+		92E919AB185E9AA400E5460E /* Player.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Player.h; path = ../Player.h; sourceTree = "<group>"; };
+		92E919AC185E9AA400E5460E /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Player.m; path = ../Player.m; sourceTree = "<group>"; };
 		92EB67621811E9C200CCCF8D /* JudgeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JudgeViewController.h; path = ../JudgeViewController.h; sourceTree = "<group>"; };
 		92EB67631811E9C200CCCF8D /* JudgeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JudgeViewController.m; path = ../JudgeViewController.m; sourceTree = "<group>"; };
-		92EB67661811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImageView+UIActivityIndicatorForSDWebImage.h"; path = "UIActivityIndicator-for-SDWebImage/UIImageView+UIActivityIndicatorForSDWebImage.h"; sourceTree = "<group>"; };
-		92EB67671811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+UIActivityIndicatorForSDWebImage.m"; path = "UIActivityIndicator-for-SDWebImage/UIImageView+UIActivityIndicatorForSDWebImage.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -267,6 +264,7 @@
 				92A8CC2817E7278700B32FC1 /* UIKit.framework in Frameworks */,
 				92431360180C6E8700A682D0 /* Parse.framework in Frameworks */,
 				92431371180C816100A682D0 /* FacebookSDK.framework in Frameworks */,
+				94368415E3374406896B29DD /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,15 +281,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		92213BB518209CAC00A4E574 /* AMBlurView */ = {
-			isa = PBXGroup;
-			children = (
-				92213BB218209CA700A4E574 /* AMBlurView.h */,
-				92213BB318209CA700A4E574 /* AMBlurView.m */,
-			);
-			name = AMBlurView;
-			sourceTree = "<group>";
-		};
 		92213BB91820A7BE00A4E574 /* UIImage+ImageEffects */ = {
 			isa = PBXGroup;
 			children = (
@@ -382,8 +371,6 @@
 				9278EA5A183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.m */,
 				92213BBD1820ABA500A4E574 /* UIImage+Crop */,
 				92213BB91820A7BE00A4E574 /* UIImage+ImageEffects */,
-				92213BB518209CAC00A4E574 /* AMBlurView */,
-				92EB67651811F6CD00CCCF8D /* ActivityIndicatorAsync */,
 				92CE27DB180CC1280089B2ED /* SDWebImage */,
 				92431327180B3D4D00A682D0 /* socket.IO-objc */,
 				92431326180B2FF900A682D0 /* SBJson */,
@@ -392,6 +379,7 @@
 				92A8CC4817E7278800B32FC1 /* Simple Server Mess AroundTests */,
 				92A8CC2217E7278700B32FC1 /* Frameworks */,
 				92A8CC2117E7278700B32FC1 /* Products */,
+				018FC19AF07D4622A18A2F32 /* Pods.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -422,6 +410,7 @@
 				92A8CC2517E7278700B32FC1 /* CoreGraphics.framework */,
 				92A8CC2717E7278700B32FC1 /* UIKit.framework */,
 				92A8CC4217E7278800B32FC1 /* XCTest.framework */,
+				6FA694B38B354E8A8B1EA62E /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -429,6 +418,7 @@
 		92A8CC2917E7278700B32FC1 /* Table Talk */ = {
 			isa = PBXGroup;
 			children = (
+				92E919AE185E9AB200E5460E /* Models */,
 				92CE27DA180CC1130089B2ED /* Views */,
 				92CE27D0180C857B0089B2ED /* iOS Core */,
 				92CE27CF180C85680089B2ED /* View Controllers */,
@@ -525,8 +515,6 @@
 				9220569A183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m */,
 				922DBFE81832D68800264D81 /* SuperlativeCardView.h */,
 				922DBFE91832D68800264D81 /* SuperlativeCardView.m */,
-				92CE27D7180CAE6A0089B2ED /* OneFriendPhotoScrollView.h */,
-				92CE27D8180CAE6A0089B2ED /* OneFriendPhotoScrollView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -578,13 +566,13 @@
 			name = images;
 			sourceTree = "<group>";
 		};
-		92EB67651811F6CD00CCCF8D /* ActivityIndicatorAsync */ = {
+		92E919AE185E9AB200E5460E /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				92EB67661811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.h */,
-				92EB67671811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.m */,
+				92E919AB185E9AA400E5460E /* Player.h */,
+				92E919AC185E9AA400E5460E /* Player.m */,
 			);
-			name = ActivityIndicatorAsync;
+			name = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -594,9 +582,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 92A8CC5217E7278800B32FC1 /* Build configuration list for PBXNativeTarget "Table Talk" */;
 			buildPhases = (
+				03F6C5FF3E7C424DAF2671AF /* Check Pods Manifest.lock */,
 				92A8CC1C17E7278700B32FC1 /* Sources */,
 				92A8CC1D17E7278700B32FC1 /* Frameworks */,
 				92A8CC1E17E7278700B32FC1 /* Resources */,
+				56A9355B3EDD47408FFAB5BD /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -686,6 +676,37 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		03F6C5FF3E7C424DAF2671AF /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+		};
+		56A9355B3EDD47408FFAB5BD /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		92A8CC1C17E7278700B32FC1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -700,7 +721,6 @@
 				92213BB81820A7B300A4E574 /* UIImage+ImageEffects.m in Sources */,
 				92CE27FB180CC1280089B2ED /* SDImageCache.m in Sources */,
 				92CE2800180CC1280089B2ED /* SDWebImageManager.m in Sources */,
-				92EB67681811F6FF00CCCF8D /* UIImageView+UIActivityIndicatorForSDWebImage.m in Sources */,
 				924312FE180B2EC600A682D0 /* NSData+SRB64Additions.m in Sources */,
 				92431352180B3D4D00A682D0 /* SocketIOTransportXHR.m in Sources */,
 				92431320180B2FE700A682D0 /* SBJsonStreamTokeniser.m in Sources */,
@@ -714,7 +734,6 @@
 				92CE27CA180C848D0089B2ED /* SocketUtil.m in Sources */,
 				92CE27FD180CC1280089B2ED /* SDWebImageDecoder.m in Sources */,
 				924312FF180B2EC600A682D0 /* SRWebSocket.m in Sources */,
-				92CE27D9180CAE6A0089B2ED /* OneFriendPhotoScrollView.m in Sources */,
 				9243131B180B2FE600A682D0 /* SBJsonParser.m in Sources */,
 				92CE27FA180CC1280089B2ED /* NSData+GIF.m in Sources */,
 				922DBFED1832F17900264D81 /* BlurUtils.m in Sources */,
@@ -730,7 +749,7 @@
 				92CE2804180CC1280089B2ED /* UIImage+MultiFormat.m in Sources */,
 				9243131F180B2FE600A682D0 /* SBJsonStreamParserState.m in Sources */,
 				92431322180B2FE700A682D0 /* SBJsonStreamWriterAccumulator.m in Sources */,
-				92213BB418209CA700A4E574 /* AMBlurView.m in Sources */,
+				92E919AD185E9AA400E5460E /* Player.m in Sources */,
 				92CE27F9180CC1280089B2ED /* MKAnnotationView+WebCache.m in Sources */,
 				92CE2802180CC1280089B2ED /* UIButton+WebCache.m in Sources */,
 				92431321180B2FE700A682D0 /* SBJsonStreamWriter.m in Sources */,
@@ -868,6 +887,7 @@
 		};
 		92A8CC5317E7278800B32FC1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 018FC19AF07D4622A18A2F32 /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -886,6 +906,7 @@
 		};
 		92A8CC5417E7278800B32FC1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 018FC19AF07D4622A18A2F32 /* Pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;

@@ -14,6 +14,9 @@
 
 @interface TableTalkUtil : NSObject
 
++(TableTalkUtil *)instance;
 +(AppDelegate *)appDelegate;
+
+@property (nonatomic, strong) NSMutableDictionary *players;
 
 @end

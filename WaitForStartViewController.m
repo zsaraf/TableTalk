@@ -10,6 +10,9 @@
 #import "TableTalkUtil.h"
 #import "GamePhotoScrollViewController.h"
 #import "JudgeViewController.h"
+#import "SDWebImageManager.h"
+#import <AFNetworking.h>
+#import "Player.h"
 
 @interface WaitForStartViewController ()
 
@@ -30,9 +33,40 @@
     [[TableTalkUtil appDelegate].socket sendBeginGameMessage];
 }
 
+-(void)addPlayerToDictionary:(NSString *)fbId
+{
+    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+    Player *player = [[Player alloc] initWithFbId:fbId];
+    [[TableTalkUtil instance].players setObject:player forKey:fbId];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:GRAPH_SEARCH_URL_FORMAT, fbId]];
+    [manager downloadWithURL:url options:0 progress:^(NSUInteger receivedSize, long long expectedSize){
+        
+    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished) {
+        [player setImage:image];
+    }];
+    NSURL *linkURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://graph.facebook.com/%@?fields=name", fbId]];
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:linkURL];
+    AFHTTPRequestOperation *op = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    op.responseSerializer = [AFJSONResponseSerializer serializer];
+    [op setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"%@", responseObject);
+    }
+    failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                  
+    }];
+}
+
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet
 {
     // ZWS-TODO: playerJoined:fbId
+    if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"initialPlayers"]) {
+        NSArray *players = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"otherPlayers"];
+        
+        for (NSString *fbId in players) {
+            [self addPlayerToDictionary:fbId];
+        }
+        // if judge you will receive superlatives
+    }
     
     if (![[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"startRound"]) return;
     NSArray *friends = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
@@ -51,7 +85,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [TableTalkUtil appDelegate].socket.delegate = self;
 	// Do any additional setup after loading the view.
 }
 

@@ -7,7 +7,6 @@
 //
 
 #import "FriendCardView.h"
-#import "AMBlurView.h"
 #import "UIImage+ImageEffects.h"
 #import "UIImage+Crop.h"
 #import "SDWebImageManager.h"

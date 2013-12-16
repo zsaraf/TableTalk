@@ -7,11 +7,9 @@
 //
 
 #import "GamePhotoScrollViewController.h"
-#import "OneFriendPhotoScrollView.h"
 #import "TableTalkUtil.h"
 #import "WaitForJudgeViewController.h"
 #import "WinnerViewController.h"
-#import "UIImageView+UIActivityIndicatorForSDWebImage.h"
 #import "UIImageView+WebCache.h"
 #import "FriendCardView.h"
 
