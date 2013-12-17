@@ -56,7 +56,7 @@
 {
     sleep(3);
     if (self.shouldSendMessage) {
-        [[TableTalkUtil appDelegate].socket sendBeginGameMessage];
+        //[[TableTalkUtil appDelegate].socket sendBeginGameMessage];
     }
 }
 
@@ -69,7 +69,7 @@
         [TableTalkUtil appDelegate].socket.delegate = vc;
         [self.navigationController pushViewController:vc animated:YES];
     } else {
-        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friends isJudge:NO];
+        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friends superlative:@"ZWS-TODO this is all bullshit"];
         [self.navigationController pushViewController:vc animated:YES];
     }
 }

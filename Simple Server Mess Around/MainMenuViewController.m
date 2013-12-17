@@ -12,6 +12,9 @@
 #include "TableTalkUtil.h"
 #include "WaitForStartViewController.h"
 #import "BlurUtils.h"
+#import <QuartzCore/QuartzCore.h>
+#import "GamePhotoScrollViewController.h"
+#import "PlayerJoinedGameView.h"
 
 @interface MainMenuViewController ()
 
@@ -20,6 +23,7 @@
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) UIImageView *bckgdImageView;
 @property (nonatomic, strong) UIImageView *blurredBckgdImageView;
+@property (nonatomic, strong) NSArray *superlatives;
 
 @end
 
@@ -108,11 +112,11 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 70, 70)];
-    [button setBackgroundImage:[UIImage imageNamed:@"TableTalkButton.png"] forState:UIControlStateNormal];
-    [button setCenter:CGPointMake(self.view.frame.size.width/2, 3.5*self.view.frame.size.height/4)];
-    [button setAlpha:0.];
-    [button addTarget:self action:@selector(goButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    self.goButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 70, 70)];
+    [self.goButton setBackgroundImage:[UIImage imageNamed:@"TableTalkButton.png"] forState:UIControlStateNormal];
+    [self.goButton setCenter:CGPointMake(self.view.frame.size.width/2, 3.5*self.view.frame.size.height/4)];
+    [self.goButton setAlpha:0.];
+    [self.goButton addTarget:self action:@selector(goButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 5, self.view.frame.size.width, 100)];
     [label setText:@"Table Talk"];
     [label setFont:[UIFont fontWithName:@"Futura-Medium" size:40]];
@@ -126,11 +130,11 @@
         [self.blurredBckgdImageView setFrame:CGRectOffset(frame, -1 * offset, 0)];
     } completion:^(BOOL finished) {
         [self.view bringSubviewToFront:self.blurredBckgdImageView];
-        [self.view addSubview:button];
+        [self.view addSubview:self.goButton];
         [self.view addSubview:label];
         [UIView animateWithDuration:.6 animations:^{
             [self.blurredBckgdImageView setAlpha:.6];
-            [button setAlpha:1.];
+            [self.goButton setAlpha:1.];
             [label setAlpha:1.];
         }];
     }];
@@ -140,6 +144,18 @@
 -(void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     //NSLog(@"updating locations");
+}
+
+- (void) runSpinAnimationOnView:(UIView*)view duration:(CGFloat)duration rotations:(CGFloat)rotations repeat:(float)repeat;
+{
+    CABasicAnimation* rotationAnimation;
+    rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+    rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 /* full rotation*/ * rotations * duration ];
+    rotationAnimation.duration = duration;
+    rotationAnimation.cumulative = YES;
+    rotationAnimation.repeatCount = repeat;
+    
+    [view.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
 }
 
 -(IBAction)goButtonPressed:(id)sender
@@ -154,13 +170,82 @@
                                         }];
         }
     }];
+    
+    UIView *blueView = [[UIView alloc] initWithFrame:CGRectOffset(self.view.bounds, 0, self.view.bounds.size.height)];
+    [blueView setBackgroundColor:[UIColor colorWithRed:16/255. green:132/255. blue:205/255. alpha:1.]];
+    [self.view insertSubview:blueView belowSubview:self.goButton];
+    
+    [self runSpinAnimationOnView:self.goButton duration:10 rotations:1 repeat:1];
+    // create label
+    UIFont *font = [UIFont fontWithName:@"Futura-Medium" size:25];
+    NSString *labelString = @"Finding game...";
+    CGSize size = [labelString sizeWithAttributes:@{NSFontAttributeName:font}];
+    CGFloat padding = 15.;
+    UILabel *labelView = [[UILabel alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, size.height)];
+    [labelView setFont:font];
+    [labelView setText:labelString];
+    [labelView setTextColor:[UIColor whiteColor]];
+    [labelView setAlpha:0];
+    [labelView setTextAlignment:NSTextAlignmentCenter];
+    [self.view addSubview:labelView];
+    [UIView animateWithDuration:1.5 animations:^{
+        [blueView setFrame:self.view.bounds];
+        [labelView setAlpha:1.0];
+        [self.goButton setFrame:CGRectOffset(self.goButton.frame, 0, -1 * labelView.frame.size.height)];
+        [labelView setCenter:CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height -1 * (padding + labelView.frame.size.height/2))];
+    }];
+    /*[UIView animateWithDuration:.5 animations:^{
+        [self.goButton setTransform:CGAffineTransformRotate(self.goButton.transform, 90.0f)];
+    }];*/
 }
 
 -(void)socketDidConnect
 {
+    [self.goButton.layer removeAllAnimations];
     WaitForStartViewController *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"waitForStartViewController"];
-    [TableTalkUtil appDelegate].socket.delegate = vc;
-    [self.navigationController pushViewController:vc animated:YES];
+    //[TableTalkUtil appDelegate].socket.delegate = vc;
+    //[self.navigationController pushViewController:vc animated:YES];
+}
+
+-(void)addPlayerToDictionary:(NSString *)fbId
+{
+    Player *player = [[Player alloc] initWithFbId:fbId];
+    player.delegate = self;
+    [[TableTalkUtil instance].players setObject:player forKey:fbId];
+}
+
+-(void)playerDidFinishDownloadingImageAndName:(Player *)player
+{
+    static NSInteger counter = 0;
+    counter ++;
+    if (counter == [TableTalkUtil instance].players.count) {
+        NSLog(@"good we can continue with judge");
+    }
+    
+    if (counter == 1) {
+        PlayerJoinedGameView *view = [[PlayerJoinedGameView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height/2 - 22, self.view.frame.size.width, 60) andPlayer:player];
+        [self.view addSubview:view];
+    }
+}
+
+-(void)socketDidReceiveEvent:(SocketIOPacket *)packet
+{
+    // ZWS-TODO: playerJoined:fbId
+    if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"initialPlayers"]) {
+        NSArray *players = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"otherPlayers"];
+        self.superlatives = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlatives"];
+        for (NSString *fbId in players) {
+            [self addPlayerToDictionary:fbId];
+        }
+        // if judge you will receive superlatives
+    } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"playerJoined"]) {
+        [self addPlayerToDictionary:[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0]];
+    } else {
+        NSArray *friends = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
+        NSString *superlative = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlative"];
+        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friends superlative:superlative];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
 }
 
 - (void)didReceiveMemoryWarning

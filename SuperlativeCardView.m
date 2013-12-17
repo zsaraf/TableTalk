@@ -10,7 +10,6 @@
 
 @interface SuperlativeCardView ()
 
-@property (nonatomic, strong) NSString *superlative;
 @property (nonatomic, strong) UILabel *superlativeLabel;
 
 @end

@@ -38,9 +38,9 @@
     }
 }
 
--(void)sendBeginGameMessage
+-(void)sendBeginGameMessageWithSuperlative:(NSString *)superlative
 {
-    [self.socketIO sendEvent:@"startGame" withData:nil];
+    [self.socketIO sendEvent:@"startGame" withData:superlative];
 }
 
 

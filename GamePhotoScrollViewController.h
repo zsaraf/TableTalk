@@ -12,6 +12,6 @@
 
 @interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate, NSURLConnectionDelegate, FriendCardViewDelegate>
 
--(id)initWithCardFBIds:(NSArray *)fbIDs isJudge:(BOOL)isJudge;
+-(id)initWithCardFBIds:(NSArray *)fbIDs superlative:(NSString *)superlative;
 
 @end

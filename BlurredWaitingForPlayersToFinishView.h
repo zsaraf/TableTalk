@@ -7,12 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Player.h"
 
 @interface BlurredWaitingForPlayersToFinishView : UIView
 
--(id)initWithFrame:(CGRect)frame image:(UIImage *)img facebookID:(NSString *)facebookID;
+-(id)initWithFrame:(CGRect)frame player:(Player *)player;
 -(void)changeToEnabledStateWithAnimation:(BOOL)animated;
 
-@property (nonatomic, strong) NSString *facebookID;
+@property (nonatomic, weak) Player *player;
 
 @end

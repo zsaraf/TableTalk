@@ -21,7 +21,7 @@
 @interface SocketUtil : NSObject <SocketIODelegate>
 
 -(id)initWithDelegate:(id<SocketUtilDelegate>)delegate andGroupId:(NSString *)groupId;
--(void)sendBeginGameMessage;
+-(void)sendBeginGameMessageWithSuperlative:(NSString *)superlative;
 -(void)sendChoseFriendMessage:(NSString *)friendId;
 -(void)sendChoseWinnerMessage:(NSString *)friendId;
 

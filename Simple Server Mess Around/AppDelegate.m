@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import "GamePhotoScrollViewController.h"
 #import "JudgeViewController.h"
+#import "DebugViewController.h"
 
 @implementation AppDelegate
 
@@ -28,6 +29,9 @@
     /*NSArray *friendsArray = [NSArray arrayWithObjects:@"521242550",@"521827780",@"524372404",@"524693200",@"524747587", nil];//, @"588688409", @"1323098301", nil];
     GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friendsArray isJudge:NO];
     [self.window setRootViewController:vc];*/
+    
+    //DebugViewController *vc = [[DebugViewController alloc] init];
+    //[self.window setRootViewController:vc];
     
     // Override point for customization after application launch.
     return YES;

@@ -12,7 +12,6 @@
 #import "JudgeViewController.h"
 #import "SDWebImageManager.h"
 #import <AFNetworking.h>
-#import "Player.h"
 
 @interface WaitForStartViewController ()
 
@@ -32,7 +31,6 @@
 }
 
 - (IBAction)beginGameButtonPressed:(id)sender {
-    [[TableTalkUtil appDelegate].socket sendBeginGameMessage];
     //ZWS-TODO: get rid of it
     NSArray *players = [NSArray array];
     JudgeViewController *vc = [[JudgeViewController alloc] initWithPlayers:players superlatives:self.superlatives];
@@ -42,26 +40,17 @@
 
 -(void)addPlayerToDictionary:(NSString *)fbId
 {
-    SDWebImageManager *manager = [SDWebImageManager sharedManager];
     Player *player = [[Player alloc] initWithFbId:fbId];
     [[TableTalkUtil instance].players setObject:player forKey:fbId];
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:GRAPH_SEARCH_URL_FORMAT, fbId]];
-    [manager downloadWithURL:url options:0 progress:^(NSUInteger receivedSize, long long expectedSize){
-        
-    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished) {
-        [player setImage:image];
-    }];
-    NSURL *linkURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://graph.facebook.com/%@?fields=name", fbId]];
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:linkURL];
-    AFHTTPRequestOperation *op = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    op.responseSerializer = [AFJSONResponseSerializer serializer];
-    [op setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        [player setName:[responseObject objectForKey:@"name"]];
+}
+
+-(void)playerDidFinishDownloadingImageAndName:(Player *)player
+{
+    static NSInteger counter = 0;
+    counter ++;
+    if (counter == [TableTalkUtil instance].players.count) {
+        NSLog(@"good we can continue with judge");
     }
-                              failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                  
-                              }];
-    [[NSOperationQueue mainQueue] addOperation:op];
 }
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet
@@ -78,16 +67,9 @@
         [self addPlayerToDictionary:[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0]];
     } else {
         NSArray *friends = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
-        if (friends == nil) {
-            NSArray *players = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"otherPlayers"];
-            NSArray *superlatives = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlatives"];
-            JudgeViewController *vc = [[JudgeViewController alloc] initWithPlayers:players superlatives:superlatives];
-            [TableTalkUtil appDelegate].socket.delegate = vc;
-            [self.navigationController pushViewController:vc animated:YES];
-        } else {
-            GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friends isJudge:NO];
-            [self.navigationController pushViewController:vc animated:YES];
-        }
+        NSString *superlative = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlative"];
+        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friends superlative:superlative];
+        [self.navigationController pushViewController:vc animated:YES];
     }
 }
 

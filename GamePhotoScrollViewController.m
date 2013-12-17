@@ -18,7 +18,6 @@
 
 @property (nonatomic, strong) NSMutableArray *scrollViewArray;
 @property (nonatomic, assign) NSInteger currentPage;
-@property (nonatomic, assign) BOOL isJudging;
 @property (nonatomic, assign) NSInteger numPhotosLoaded;
 @property (nonatomic, strong) UIView *blackView;
 
@@ -28,6 +27,7 @@
 @property (nonatomic, strong) UIToolbar *toolbar;
 @property (nonatomic, weak) FriendCardView *current;
 @property (nonatomic, assign) CGFloat screenWidth;
+@property (nonatomic, strong) NSString *superlative;
 
 @end
 
@@ -42,14 +42,12 @@
     return self;
 }
 
--(id)initWithCardFBIds:(NSArray *)fbIDs isJudge:(BOOL)isJudge
+-(id)initWithCardFBIds:(NSArray *)fbIDs superlative:(NSString *)superlative
 {
-    self = [super init];
-    if (self) {
+    if (self = [super init]) {
         self.scrollViewArray = [[NSMutableArray alloc] init];
-        self.isJudging = isJudge;
         [TableTalkUtil appDelegate].socket.delegate = self;
-        
+        self.superlative = superlative;
         self.contentView = [[UIView alloc] init];
         int index = 0;
         for (NSString *fbID in fbIDs) {
@@ -59,7 +57,6 @@
             [self.contentView insertSubview:sv atIndex:0];
             index ++;
         }
-        
     }
     return self;
 }
@@ -232,12 +229,11 @@
     self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
     [self.toolbar setBarTintColor:[UIColor colorWithRed:39/255. green:144/255. blue:210/255. alpha:1.]]; //rgba(44, 62, 80,1.0)
     [self.toolbar setTranslucent:NO];
-    NSString *superlativeString = @"Best Smile";
     UIFont *myFont = [UIFont fontWithName:@"Futura-Medium" size:25];
-    CGSize size = [superlativeString sizeWithAttributes:@{NSFontAttributeName:myFont}];
+    CGSize size = [self.superlative sizeWithAttributes:@{NSFontAttributeName:myFont}];
     CGFloat verticalPadding = (self.toolbar.frame.size.height - size.height)/2;
     UILabel *superlativeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, verticalPadding, self.toolbar.frame.size.width, self.toolbar.frame.size.height - 2 * verticalPadding)];
-    [superlativeLabel setText:superlativeString];
+    [superlativeLabel setText:self.superlative];
     [superlativeLabel setFont:myFont];
     [superlativeLabel setTextAlignment:NSTextAlignmentCenter];
     [superlativeLabel setTextColor:[UIColor whiteColor]];
@@ -293,10 +289,6 @@
 {
     NSLog(@"photo doubel tapped");
     /*NSInteger friendIndex = self.photoScrollView.contentOffset.x/self.photoScrollView.frame.size.width;
-     // ZWS-TODO Judge will never be in this screen, remove following.
-    if (self.isJudging) {
-        [[TableTalkUtil appDelegate].socket sendChoseWinnerMessage:[self.card_fbIDs objectAtIndex:friendIndex]];
-    } else {
         WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
         [TableTalkUtil appDelegate].socket.delegate = vc;
         [self.navigationController pushViewController:vc animated:YES];
@@ -309,13 +301,7 @@
     // ZWS-TODO receive playerFinished, and keep stored
     // ZWS-TODO receive startJudging, and go to waitforjudge
     if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"roundFinished"]) {
-        if (self.isJudging) {
-            NSString *winner = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"winner"];
-            NSString *selectedFriend = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
-        
-            WinnerViewController *vc = [[WinnerViewController alloc] initWithWinner:winner andSelectedFriend:selectedFriend andShouldSendMessage:YES];
-            [self.navigationController pushViewController:vc animated:YES];
-        }
+    
     } else {
         
     }

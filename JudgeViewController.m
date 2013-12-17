@@ -12,6 +12,8 @@
 #import "SDWebImageManager.h"
 #import "BlurredWaitingForPlayersToFinishView.h"
 #import "JudgingSelectorChosenFriendCard.h"
+#import "Player.h"
+#import "JudgeChoosingWinnerPhotoScrollView.h"
 
 #define ENABLED_CONSTANT .7817
 
@@ -26,8 +28,9 @@
 @property (nonatomic, strong) NSMutableDictionary *chosenPhotosDictionary;
 @property (nonatomic, strong) UIScrollView *chosenPhotosScrollView;
 @property (nonatomic, assign) CGFloat screenWidth;
-
 @property (nonatomic, strong) NSMutableArray *chosenPhotosImageViews;
+@property (nonatomic, strong) NSMutableArray *choices;
+@property (nonatomic, strong) JudgeChoosingWinnerPhotoScrollView *judgeChoosingWinnerPhotoScrollView;
 
 @end
 
@@ -47,36 +50,11 @@
     if (self = [super init]) {
         self.players = players;
         self.photosDictionary = [[NSMutableDictionary alloc] init];
-        for (int i = 0; i < self.players.count; i++) {
-            [self beginDownloadingPhotoForPlayer:[self.players objectAtIndex:i]];
-        }
+        self.choices = [[NSMutableArray alloc] init];
         self.currentlySelected = -1;
         self.superlatives = superlatives;
     }
     return self;
-}
-
-
--(void)beginDownloadingPhotoForPlayer:(NSString *)player
-{
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:GRAPH_SEARCH_URL_FORMAT, player]];
-    
-    SDWebImageManager *manager = [SDWebImageManager sharedManager];
-    [manager downloadWithURL:url options:0
-                    progress:^(NSUInteger receivedSize, long long expectedSize) {
-                        
-                    }
-                   completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished){
-                       if (image) {
-                           [self.photosDictionary setObject:image forKey:player];
-                           if (self.hasChosen && self.photosDictionary.count == self.players.count) {
-                               [self displayDownloadedImages];
-                           }
-                           NSLog(@"loaded");
-                       } else {
-                           NSLog(@"didnt load");
-                       }
-                   }];
 }
 
 - (void)viewDidLoad
@@ -99,34 +77,18 @@
         [self.view addSubview:v];
     }
     
-    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(screenTapped:)];
-    [self.view addGestureRecognizer:recognizer];
-    
     UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(screenDoubleTapped:)];
     [doubleTapRecognizer setNumberOfTapsRequired:2];
     [self.view addGestureRecognizer:doubleTapRecognizer];
-    
-    [recognizer requireGestureRecognizerToFail:doubleTapRecognizer];
-	// Do any additional setup after loading the view.
 }
 
 -(IBAction)screenDoubleTapped:(UITapGestureRecognizer *)sender
 {
-    // MUST UNCOMMENT THIS --ZWS
-    //SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
- 
-    // MUST REMOVE THIS, ONLY USED FOR FAST DEBUGGING. --ZWS
-    SuperlativeCardView *v = [self.views firstObject];
+    SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
+    [self displayPlayerImagesWithSuperlativeView:v];
+    [[TableTalkUtil appDelegate].socket sendBeginGameMessageWithSuperlative:v.superlative];
+    self.views = [[NSMutableArray alloc] initWithObjects:v, nil];
     
-    
-    if (v.index != self.currentlySelected) {
-        [self screenTapped:sender];
-    } else {
-        self.hasChosen = YES;
-        if (self.photosDictionary.count == self.players.count) {
-            [self displayDownloadedImages];
-        }
-    }
 }
 
 -(CGFloat)screenWidth
@@ -137,39 +99,27 @@
 
 -(void)setScreenWidth:(CGFloat)screenWidth {}
 
--(void)displayDownloadedImages
+-(void)displayPlayerImagesWithSuperlativeView:(UIView *)superlativeView
 {
     self.playerViews = [[NSMutableArray alloc] init];
-    for (int i = 0; i < self.players.count; i++) {
-        NSString *p = [self.players objectAtIndex:i];
-        UIImage *img = [self.photosDictionary objectForKey:p];
-        BlurredWaitingForPlayersToFinishView *blurView = [[BlurredWaitingForPlayersToFinishView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height/4 + i*(self.view.frame.size.height/12), self.view.frame.size.width, self.view.frame.size.height/12) image:img facebookID:p];
+    NSMutableDictionary *playersDict = [TableTalkUtil instance].players;
+    int i = 0;
+    for (NSString *fbId in playersDict) {
+        Player *player = [playersDict objectForKey:fbId];
+        BlurredWaitingForPlayersToFinishView *blurView = [[BlurredWaitingForPlayersToFinishView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height/4 + i*(self.view.frame.size.height/12), self.view.frame.size.width, self.view.frame.size.height/12) player:player];
         [blurView setAlpha:0.];
         [self.view insertSubview:blurView atIndex:0];
         [self.playerViews addObject:blurView];
+        i ++;
     }
-    
-    SuperlativeCardView *v = [self.views objectAtIndex:self.currentlySelected];
     [UIView animateWithDuration:.3 animations:^{
-        [v setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height/4)];
+        [superlativeView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height/4)];
         for (UIView *view in self.views) {
-            if (view != v) {
+            if (view != superlativeView) {
                 [view setAlpha:0.];
             }
         }
         for (UIView *view in self.playerViews) [view setAlpha:1.];
-    } // no necessary completion thing usually MUST REMOVE THIS --ZWS all of completion method (figure out what else to do)
-    completion:^(BOOL finished) {
-        self.chosenPhotosDictionary = [[NSMutableDictionary alloc] init];
-        for (NSString *key in self.photosDictionary) {
-            [self.chosenPhotosDictionary setObject:[self.photosDictionary objectForKey:key] forKey:key];
-        }
-        
-        [self createScrollViewWithChosenPhotos];
-        [UIView animateWithDuration:.3 animations:^{
-            for (UIView *view in self.playerViews) [view setAlpha:0.];
-            [self.chosenPhotosScrollView setAlpha:1.0];
-        }];
     }];
 }
 
@@ -227,7 +177,39 @@
     return v;
 }
 
--(IBAction)screenTapped:(UITapGestureRecognizer *)sender
+// choice delegate
+-(void)didFinishDownloadingImageAndNameForChoice:(Choice *)choice
+{
+    static NSInteger count = 0;
+    count++;
+    if (count == [TableTalkUtil instance].players.count) {
+        [self displaySelectedPlayersToBeginJudging];
+    }
+}
+
+-(void)displaySelectedPlayersToBeginJudging
+{
+    SuperlativeCardView *scv = [self.views firstObject];
+    self.judgeChoosingWinnerPhotoScrollView = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:CGRectMake(0, scv.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - scv.frame.size.height) choices:self.choices];
+    [self.judgeChoosingWinnerPhotoScrollView setAlpha:0];
+    [self.view addSubview:self.judgeChoosingWinnerPhotoScrollView];
+    [UIView animateWithDuration:.5 animations:^{
+        [self.judgeChoosingWinnerPhotoScrollView setAlpha:1];
+        for (UIView *v in self.view.subviews) {
+            if (v != scv && v != self.judgeChoosingWinnerPhotoScrollView) {
+                [v setAlpha:0.];
+            }
+        }
+    } completion:^(BOOL finished) {
+        for (UIView *v in self.view.subviews) {
+            if (v != scv && v != self.judgeChoosingWinnerPhotoScrollView) {
+                [v removeFromSuperview];
+            }
+        }
+    }];
+}
+
+/*-(IBAction)screenTapped:(UITapGestureRecognizer *)sender
 {
     // MUST UNCOMMENT THIS --ZWS
     //SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
@@ -256,7 +238,7 @@
             }
         }];
     }
-}
+}*/
 
 -(void)viewWillAppear:(BOOL)animated
 {
@@ -266,10 +248,6 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    // MUST REMOVE THIS, ONLY BEING USED FOR DEBUGGING. --ZWS
-    [self screenTapped:nil];
-    [self screenDoubleTapped:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -287,11 +265,15 @@
         //GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:fbIDs isJudge:YES];
         //[self.navigationController pushViewController:vc animated:YES];
     } else if ([[json objectForKey:@"name"] isEqualToString:@"playerFinished"]) {
-        NSLog(@"%@", json);
-        NSString *fbId = [[json objectForKey:@"args"] objectAtIndex:0];
+        NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"userID"];
+        NSString *selectedFbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
+        Choice *choice = [[Choice alloc] initWithFbId:selectedFbId chosenByFbId:fbId];
+        choice.delegate = self;
+        [self.choices addObject:choice];
+        
         BlurredWaitingForPlayersToFinishView *v;
         for (BlurredWaitingForPlayersToFinishView *view in self.playerViews) {
-            if ([view.facebookID isEqualToString:fbId]) {
+            if ([view.player.fbId isEqualToString:fbId]) {
                 v = view;
             }
         }

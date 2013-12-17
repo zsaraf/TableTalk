@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		92016017185EEEDE009A93A7 /* debugImage@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92016016185EEEDE009A93A7 /* debugImage@2x.jpg */; };
+		921BD1E11860069300CBB901 /* PlayerJoinedGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 921BD1E01860069300CBB901 /* PlayerJoinedGameView.m */; };
 		9220569B183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9220569A183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m */; };
 		92213BB81820A7B300A4E574 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 92213BB71820A7B300A4E574 /* UIImage+ImageEffects.m */; };
 		92213BBC1820AB8F00A4E574 /* UIImage+Crop.m in Sources */ = {isa = PBXBuildFile; fileRef = 92213BBB1820AB8F00A4E574 /* UIImage+Crop.m */; };
@@ -64,6 +66,9 @@
 		92A8CC4517E7278800B32FC1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92A8CC2717E7278700B32FC1 /* UIKit.framework */; };
 		92A8CC4D17E7278800B32FC1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 92A8CC4B17E7278800B32FC1 /* InfoPlist.strings */; };
 		92A8CC4F17E7278800B32FC1 /* Simple_Server_Mess_AroundTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 92A8CC4E17E7278800B32FC1 /* Simple_Server_Mess_AroundTests.m */; };
+		92B62C02185ED8A600B4F58E /* DebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B62C01185ED8A600B4F58E /* DebugViewController.m */; };
+		92B62C05185ED8F500B4F58E /* JudgeChoosingWinnerPhotoScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B62C04185ED8F500B4F58E /* JudgeChoosingWinnerPhotoScrollView.m */; };
+		92B62C08185ED93900B4F58E /* Choice.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B62C07185ED93900B4F58E /* Choice.m */; };
 		92CE27CA180C848D0089B2ED /* SocketUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27C9180C848D0089B2ED /* SocketUtil.m */; };
 		92CE27CD180C85550089B2ED /* TableTalkUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27CC180C85550089B2ED /* TableTalkUtil.m */; };
 		92CE27D6180CAD6A0089B2ED /* GamePhotoScrollViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92CE27D5180CAD6A0089B2ED /* GamePhotoScrollViewController.m */; };
@@ -104,6 +109,9 @@
 /* Begin PBXFileReference section */
 		018FC19AF07D4622A18A2F32 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		6FA694B38B354E8A8B1EA62E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		92016016185EEEDE009A93A7 /* debugImage@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "debugImage@2x.jpg"; sourceTree = "<group>"; };
+		921BD1DF1860069300CBB901 /* PlayerJoinedGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerJoinedGameView.h; sourceTree = "<group>"; };
+		921BD1E01860069300CBB901 /* PlayerJoinedGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerJoinedGameView.m; sourceTree = "<group>"; };
 		92205699183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlurredWaitingForPlayersToFinishView.h; path = ../BlurredWaitingForPlayersToFinishView.h; sourceTree = "<group>"; };
 		9220569A183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BlurredWaitingForPlayersToFinishView.m; path = ../BlurredWaitingForPlayersToFinishView.m; sourceTree = "<group>"; };
 		92213BB61820A7B300A4E574 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
@@ -197,6 +205,12 @@
 		92A8CC4A17E7278800B32FC1 /* Table TalkTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Table TalkTests-Info.plist"; sourceTree = "<group>"; };
 		92A8CC4C17E7278800B32FC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		92A8CC4E17E7278800B32FC1 /* Simple_Server_Mess_AroundTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Simple_Server_Mess_AroundTests.m; sourceTree = "<group>"; };
+		92B62C00185ED8A600B4F58E /* DebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugViewController.h; sourceTree = "<group>"; };
+		92B62C01185ED8A600B4F58E /* DebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugViewController.m; sourceTree = "<group>"; };
+		92B62C03185ED8F500B4F58E /* JudgeChoosingWinnerPhotoScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JudgeChoosingWinnerPhotoScrollView.h; sourceTree = "<group>"; };
+		92B62C04185ED8F500B4F58E /* JudgeChoosingWinnerPhotoScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JudgeChoosingWinnerPhotoScrollView.m; sourceTree = "<group>"; };
+		92B62C06185ED93900B4F58E /* Choice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Choice.h; sourceTree = "<group>"; };
+		92B62C07185ED93900B4F58E /* Choice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Choice.m; sourceTree = "<group>"; };
 		92CE27C8180C848D0089B2ED /* SocketUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SocketUtil.h; path = ../SocketUtil.h; sourceTree = "<group>"; };
 		92CE27C9180C848D0089B2ED /* SocketUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SocketUtil.m; path = ../SocketUtil.m; sourceTree = "<group>"; };
 		92CE27CB180C85550089B2ED /* TableTalkUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TableTalkUtil.h; path = ../TableTalkUtil.h; sourceTree = "<group>"; };
@@ -367,6 +381,15 @@
 		92A8CC1717E7278700B32FC1 = {
 			isa = PBXGroup;
 			children = (
+				921BD1DF1860069300CBB901 /* PlayerJoinedGameView.h */,
+				921BD1E01860069300CBB901 /* PlayerJoinedGameView.m */,
+				92016016185EEEDE009A93A7 /* debugImage@2x.jpg */,
+				92B62C00185ED8A600B4F58E /* DebugViewController.h */,
+				92B62C01185ED8A600B4F58E /* DebugViewController.m */,
+				92B62C03185ED8F500B4F58E /* JudgeChoosingWinnerPhotoScrollView.h */,
+				92B62C04185ED8F500B4F58E /* JudgeChoosingWinnerPhotoScrollView.m */,
+				92B62C06185ED93900B4F58E /* Choice.h */,
+				92B62C07185ED93900B4F58E /* Choice.m */,
 				9278EA59183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.h */,
 				9278EA5A183AC7A4001A5DFD /* JudgingSelectorChosenFriendCard.m */,
 				92213BBD1820ABA500A4E574 /* UIImage+Crop */,
@@ -661,6 +684,7 @@
 				92DC83CF1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg in Resources */,
 				92DC83D01848513C00ECB495 /* NewFriendsTablefeb25th.jpg in Resources */,
 				9243134B180B3D4D00A682D0 /* .gitmodules in Resources */,
+				92016017185EEEDE009A93A7 /* debugImage@2x.jpg in Resources */,
 				92A8CC2E17E7278700B32FC1 /* InfoPlist.strings in Resources */,
 				92A8CC3717E7278700B32FC1 /* Main.storyboard in Resources */,
 			);
@@ -716,6 +740,7 @@
 				9220569B183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m in Sources */,
 				92CE2805180CC1280089B2ED /* UIImage+WebP.m in Sources */,
 				92CE2806180CC1280089B2ED /* UIImageView+WebCache.m in Sources */,
+				921BD1E11860069300CBB901 /* PlayerJoinedGameView.m in Sources */,
 				92CE2801180CC1280089B2ED /* SDWebImagePrefetcher.m in Sources */,
 				9243131D180B2FE600A682D0 /* SBJsonStreamParserAccumulator.m in Sources */,
 				92213BB81820A7B300A4E574 /* UIImage+ImageEffects.m in Sources */,
@@ -730,6 +755,7 @@
 				924312FD180B2EC600A682D0 /* base64.c in Sources */,
 				92CE27FC180CC1280089B2ED /* SDWebImageCompat.m in Sources */,
 				92A8CC3A17E7278700B32FC1 /* MainMenuViewController.m in Sources */,
+				92B62C08185ED93900B4F58E /* Choice.m in Sources */,
 				92CE2809180CC68C0089B2ED /* WaitForStartViewController.m in Sources */,
 				92CE27CA180C848D0089B2ED /* SocketUtil.m in Sources */,
 				92CE27FD180CC1280089B2ED /* SDWebImageDecoder.m in Sources */,
@@ -743,6 +769,7 @@
 				924E74241818D8CD00585077 /* WinnerViewController.m in Sources */,
 				9243131C180B2FE600A682D0 /* SBJsonStreamParser.m in Sources */,
 				92CE27D6180CAD6A0089B2ED /* GamePhotoScrollViewController.m in Sources */,
+				92B62C05185ED8F500B4F58E /* JudgeChoosingWinnerPhotoScrollView.m in Sources */,
 				92213BBC1820AB8F00A4E574 /* UIImage+Crop.m in Sources */,
 				92431351180B3D4D00A682D0 /* SocketIOTransportWebsocket.m in Sources */,
 				9243131E180B2FE600A682D0 /* SBJsonStreamParserAdapter.m in Sources */,
@@ -762,6 +789,7 @@
 				92A8CC3017E7278700B32FC1 /* main.m in Sources */,
 				92EB67641811E9C200CCCF8D /* JudgeViewController.m in Sources */,
 				92431324180B2FE700A682D0 /* SBJsonWriter.m in Sources */,
+				92B62C02185ED8A600B4F58E /* DebugViewController.m in Sources */,
 				9243136F180C701A00A682D0 /* LoginViewController.m in Sources */,
 				9243134F180B3D4D00A682D0 /* SocketIOJSONSerialization.m in Sources */,
 			);

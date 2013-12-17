@@ -30,24 +30,33 @@
     return self;
 }
 
--(id)initWithFrame:(CGRect)frame image:(UIImage *)img facebookID:(NSString *)facebookID
+-(id)initWithFrame:(CGRect)frame player:(Player *)player
 {
     if (self = [super initWithFrame:frame]) {
-        self.img = img;
-        self.facebookID = facebookID;
-        CGFloat cropHeight = self.frame.size.height*(img.size.width/self.frame.size.width);
-        self.img = [img cropFromRect:CGRectMake(0, img.size.height/2 - cropHeight/2, img.size.width, cropHeight)];
+        self.player = player;
+        
+        
+        CGFloat cropHeight = self.frame.size.height*(self.player.image.size.width/self.frame.size.width);
+        UIImage *img = [self.player.image cropFromRect:CGRectMake(0, self.player.image.size.height/2 - cropHeight/2, self.player.image.size.width, cropHeight)];
         self.imgView = [[UIImageView alloc] initWithFrame:self.bounds];
-        [self.imgView setImage:self.img];
+        [self.imgView setImage:img];
         self.blurredImg = [BlurUtils drawBlur:self.imgView size:self.bounds.size cropRect:CGRectMake(0, 0, 1, 1) withBlurEffect:BlurUtilsLightEffect];
         self.blurredImgView = [[UIImageView alloc] initWithFrame:self.bounds];
         [self.blurredImgView setImage:self.blurredImg];
         [self addSubview:self.blurredImgView];
         [self addSubview:self.imgView];
         UIView *blueView = [[UIView alloc] initWithFrame:self.bounds];
-        [blueView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1. alpha:.1]];
+        [blueView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1. alpha:.2]];
         [self addSubview:blueView];
+        
+        UIFont *font = [UIFont fontWithName:@"Futura-Medium" size:20];
+        UILabel *nameLabel = [[UILabel alloc] initWithFrame:self.bounds];
+        [nameLabel setText:player.name];
+        [nameLabel setFont:font];
+        [nameLabel setTextColor:[UIColor whiteColor]];
+        [self addSubview:nameLabel];
         [self bringSubviewToFront:self.blurredImgView];
+
     }
     return self;
 }

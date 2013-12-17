@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 #import "SocketIO.h"
 #import "TableTalkUtil.h"
+#import "Player.h"
 
-@interface MainMenuViewController : UIViewController <SocketUtilDelegate, CLLocationManagerDelegate>
+@interface MainMenuViewController : UIViewController <SocketUtilDelegate, CLLocationManagerDelegate, PlayerDelegate>
 
 @property (nonatomic, weak) IBOutlet UITextField *groupID;
-@property (nonatomic, weak) IBOutlet UIButton *goButton;
+@property (nonatomic, strong) UIButton *goButton;
 
 @end

@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "TableTalkUtil.h"
+#import "Player.h"
 
-@interface WaitForStartViewController : UIViewController<SocketUtilDelegate>
+@interface WaitForStartViewController : UIViewController<SocketUtilDelegate, PlayerDelegate>
 
 @end
