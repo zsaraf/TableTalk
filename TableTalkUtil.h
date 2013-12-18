@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SocketUtil.h"
 #import "AppDelegate.h"
+#import "Player.h"
 
 #define GRAPH_SEARCH_URL_FORMAT @"https://graph.facebook.com/%@/picture?width=640&height=640&return_ssl_resources=1"
 
@@ -18,5 +19,6 @@
 +(AppDelegate *)appDelegate;
 
 @property (nonatomic, strong) NSMutableDictionary *players;
+@property (nonatomic, strong) Player *me;
 
 @end

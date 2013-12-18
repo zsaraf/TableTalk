@@ -14,7 +14,6 @@
 #import "BlurUtils.h"
 #import <QuartzCore/QuartzCore.h>
 #import "GamePhotoScrollViewController.h"
-#import "PlayerJoinedGameView.h"
 
 @interface MainMenuViewController ()
 
@@ -24,6 +23,8 @@
 @property (nonatomic, strong) UIImageView *bckgdImageView;
 @property (nonatomic, strong) UIImageView *blurredBckgdImageView;
 @property (nonatomic, strong) NSArray *superlatives;
+@property (nonatomic, strong) NSMutableArray *playerBlurbs;
+@property (nonatomic, strong) UILabel *labelView;
 
 @end
 
@@ -40,6 +41,8 @@
     [self.locationManager setDelegate:self];
     [self.locationManager startUpdatingLocation];
     
+    self.playerBlurbs = [[NSMutableArray alloc] init];
+    
     FBRequest *request = [FBRequest requestForMe];
     
     // Send request to Facebook
@@ -51,7 +54,11 @@
             [[PFUser currentUser] setObject:userData forKey:@"profile"];
             [[PFUser currentUser] setObject:userData[@"id"] forKey:@"fbId"];
             [[PFUser currentUser] saveInBackground];
+            
             NSString *facebookID = userData[@"id"];
+            Player *me = [[Player alloc] initWithFbId:facebookID];
+            me.delegate = self;
+            [TableTalkUtil instance].me = me;
             NSString *name = userData[@"name"];
             NSString *location = userData[@"location"][@"name"];
             NSString *gender = userData[@"gender"];
@@ -86,15 +93,16 @@
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:self.friendIds forKey:@"friendIds"];
             /*// Construct a PFUser query that will find friends whose facebook ids
-            // are contained in the current user's friend list.
-            PFQuery *friendQuery = [PFUser query];
-            [friendQuery whereKey:@"fbId" containedIn:friendIds];
-            
-            // findObjects will return a list of PFUsers that are friends
-            // with the current user
-            NSArray *friendUsers = [friendQuery findObjects];*/
+             // are contained in the current user's friend list.
+             PFQuery *friendQuery = [PFUser query];
+             [friendQuery whereKey:@"fbId" containedIn:friendIds];
+             
+             // findObjects will return a list of PFUsers that are friends
+             // with the current user
+             NSArray *friendUsers = [friendQuery findObjects];*/
         }
     }];
+    
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -112,8 +120,8 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.goButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 70, 70)];
-    [self.goButton setBackgroundImage:[UIImage imageNamed:@"TableTalkButton.png"] forState:UIControlStateNormal];
+    self.goButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 90, 90)];
+    [self.goButton setBackgroundImage:[UIImage imageNamed:@"TableTalkButton2.png"] forState:UIControlStateNormal];
     [self.goButton setCenter:CGPointMake(self.view.frame.size.width/2, 3.5*self.view.frame.size.height/4)];
     [self.goButton setAlpha:0.];
     [self.goButton addTarget:self action:@selector(goButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -171,8 +179,10 @@
         }
     }];
     
-    UIView *blueView = [[UIView alloc] initWithFrame:CGRectOffset(self.view.bounds, 0, self.view.bounds.size.height)];
-    [blueView setBackgroundColor:[UIColor colorWithRed:16/255. green:132/255. blue:205/255. alpha:1.]];
+    UIView *blueView = [[UIView alloc] initWithFrame:CGRectOffset(self.view.bounds, 0, 0)];
+    // 34495e
+    [blueView setBackgroundColor:[UIColor colorWithRed:88/255. green:169/255. blue:220/255. alpha:1.]];//[UIColor colorWithRed:116/255. green:194/255. blue:255/255. alpha:1.]];
+    [blueView setAlpha:0.];
     [self.view insertSubview:blueView belowSubview:self.goButton];
     
     [self runSpinAnimationOnView:self.goButton duration:10 rotations:1 repeat:1];
@@ -181,28 +191,45 @@
     NSString *labelString = @"Finding game...";
     CGSize size = [labelString sizeWithAttributes:@{NSFontAttributeName:font}];
     CGFloat padding = 15.;
-    UILabel *labelView = [[UILabel alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, size.height)];
-    [labelView setFont:font];
-    [labelView setText:labelString];
-    [labelView setTextColor:[UIColor whiteColor]];
-    [labelView setAlpha:0];
-    [labelView setTextAlignment:NSTextAlignmentCenter];
-    [self.view addSubview:labelView];
-    [UIView animateWithDuration:1.5 animations:^{
-        [blueView setFrame:self.view.bounds];
-        [labelView setAlpha:1.0];
-        [self.goButton setFrame:CGRectOffset(self.goButton.frame, 0, -1 * labelView.frame.size.height)];
-        [labelView setCenter:CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height -1 * (padding + labelView.frame.size.height/2))];
+    self.labelView = [[UILabel alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, size.height)];
+    [self.labelView setFont:font];
+    [self.labelView setText:labelString];
+    [self.labelView setTextColor:[UIColor whiteColor]];
+    [self.labelView setAlpha:0];
+    [self.labelView setTextAlignment:NSTextAlignmentCenter];
+    [self.view addSubview:self.labelView];
+    [UIView animateWithDuration:2.5 animations:^{
+        [blueView setAlpha:1];
+        [self.labelView setAlpha:1.0];
+        CGFloat padding = 40;
+        [self.goButton setFrame:CGRectMake(padding, self.view.frame.size.height/2 - self.view.frame.size.width/2 + padding, self.view.frame.size.width - 2* padding, self.view.frame.size.width - 2* padding)];
+        [self.labelView setCenter:CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height -1 * (padding + self.labelView.frame.size.height/2))];
+    } completion:^(BOOL finished) {
+        //NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(timerCalled:) userInfo:Nil repeats:YES];
     }];
     /*[UIView animateWithDuration:.5 animations:^{
-        [self.goButton setTransform:CGAffineTransformRotate(self.goButton.transform, 90.0f)];
-    }];*/
+     [self.goButton setTransform:CGAffineTransformRotate(self.goButton.transform, 90.0f)];
+     }];*/
+}
+
+-(IBAction)timerCalled:(id)sender
+{
+    static int counter = 0;
+    NSArray *players = [NSArray arrayWithObjects:@"521242550",@"521827780",@"524372404",@"524693200",@"524747587", @"588688409", @"1323098301", nil];
+    [self addPlayerToDictionary:[players objectAtIndex:counter]];
+    
+    
+    
+    counter ++;
+    if (counter == 7) [(NSTimer *)sender invalidate];
 }
 
 -(void)socketDidConnect
 {
-    [self.goButton.layer removeAllAnimations];
-    WaitForStartViewController *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"waitForStartViewController"];
+    CATransform3D myTransform = [(CALayer*)[self.goButton.layer presentationLayer] transform];
+    CGFloat rotation = atan2(myTransform.m11, myTransform.m12);
+    NSLog(@"socket did connect...");
+    //WaitForStartViewController *vc = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"waitForStartViewController"];
     //[TableTalkUtil appDelegate].socket.delegate = vc;
     //[self.navigationController pushViewController:vc animated:YES];
 }
@@ -222,10 +249,53 @@
         NSLog(@"good we can continue with judge");
     }
     
-    if (counter == 1) {
-        PlayerJoinedGameView *view = [[PlayerJoinedGameView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height/2 - 22, self.view.frame.size.width, 60) andPlayer:player];
-        [self.view addSubview:view];
+    for (int i = 0; i < self.playerBlurbs.count; i++) {
+        UIImageView *playerBlurb = [self.playerBlurbs objectAtIndex:i];
+        [playerBlurb.layer removeAllAnimations];
     }
+    
+    UIImageView *circleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-50, -50, 50, 50)];
+    [circleImageView setImage:player.image];
+    [circleImageView setClipsToBounds:YES];
+    [self.view addSubview:circleImageView];
+    circleImageView.layer.cornerRadius = circleImageView.frame.size.height/2;
+    [self.playerBlurbs addObject:circleImageView];
+    
+    if (counter == 1) return;
+    
+    [UIView animateWithDuration:.5 animations:^{
+        for (int i = 0; i < self.playerBlurbs.count; i++) {
+            CGPoint center = CGPointMake(self.goButton.center.x + self.goButton.frame.size.width/2 * cos(i * 2 * M_PI/self.playerBlurbs.count + 3 * M_PI/2), self.goButton.center.y + self.goButton.frame.size.width/2 * sin(i * 2 * M_PI/self.playerBlurbs.count + 3 * M_PI/2));
+            [[self.playerBlurbs objectAtIndex:i] setCenter:center];
+        }
+    }];
+    
+    if (counter == 2) {
+        UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 80, self.view.frame.size.width, 80)];
+        [button setBackgroundColor:[UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:1.]];
+        [[button titleLabel] setTextColor:[UIColor whiteColor]];
+        [[button titleLabel] setFont:[UIFont fontWithName:@"Futura-Medium" size:20]];
+        [[button titleLabel] setTextAlignment:NSTextAlignmentCenter];
+        [[button titleLabel] setLineBreakMode:NSLineBreakByWordWrapping];
+        [button setAlpha:0.];
+        [button setTitleEdgeInsets:UIEdgeInsetsMake(0, 20, 0, 20)];
+        [button setTitle:@"Tap when all of your friends are at the table" forState:UIControlStateNormal];
+        [button addTarget:self action:@selector(beginGameButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:button];
+        // rgb(46, 204, 113)
+        [UIView animateWithDuration:.5 animations:^{
+            [self.labelView setFrame:CGRectOffset(self.labelView.frame, 0, 100)];
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:.5 animations:^{
+                [button setAlpha:1];
+            }];
+        }];
+     }
+}
+
+-(IBAction)beginGameButtonTapped:(UIButton *)sender
+{
+    
 }
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet

@@ -24,5 +24,6 @@
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *fbId;
 @property (nonatomic, weak) id<PlayerDelegate> delegate;
+@property (nonatomic, assign) NSInteger score;
 
 @end

@@ -19,6 +19,7 @@
         self.fbId = fbId;
         self.chosenByFbId = chosenByFbId;
         
+        if (self.fbId.length == 0) return self;
         // handle downloading
         SDWebImageManager *manager = [SDWebImageManager sharedManager];
         

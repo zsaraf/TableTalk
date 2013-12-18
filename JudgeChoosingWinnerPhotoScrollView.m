@@ -9,7 +9,7 @@
 #import "JudgeChoosingWinnerPhotoScrollView.h"
 #import "Choice.h"
 
-#define SIZE_OF_LABEL 40
+#define SIZE_OF_LABEL 44
 
 @interface JudgeChoosingWinnerPhotoScrollView ()
 
@@ -29,17 +29,19 @@
         self.labels = [[NSMutableArray alloc] init];
         int counter = 0;
         self.scrollEnabled = YES;
+        self.bounces = NO;
         self.delegate = self;
         self.contentSize = CGSizeMake(self.frame.size.width, self.choices.count * (SIZE_OF_LABEL + self.frame.size.width));
         for (Choice *choice in self.choices) {
             UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, counter *(SIZE_OF_LABEL + self.frame.size.width), self.frame.size.width, SIZE_OF_LABEL)];
-            [label setBackgroundColor:[UIColor colorWithRed:1 green:1 blue:1 alpha:.9]];
+            [label setBackgroundColor:[UIColor colorWithRed:212/255. green:235/255. blue:247/255. alpha:.9]];
             [label setText:choice.name];
-            [label setFont:[UIFont fontWithName:@"Futura-Medium" size:20]];
+            [label setTextColor:[UIColor colorWithRed:48/255. green:65/255. blue:155/255. alpha:1.]];
+            [label setFont:[UIFont fontWithName:@"Futura-Medium" size:25]];
             [self addSubview:label];
             
             UIView *v = [[UIView alloc] initWithFrame:label.frame];
-            [v setBackgroundColor:[UIColor whiteColor]];
+            [v setBackgroundColor:[UIColor colorWithRed:212/255. green:235/255. blue:247/255. alpha:.9]];
             [self addSubview:v];
             
             [self.labels addObject:label];
@@ -76,7 +78,7 @@
         UILabel *currentLabel = [self.labels objectAtIndex:currentPage];
         [currentLabel setCenter:CGPointMake(self.frame.size.width/2, nextLabel.frame.origin.y - SIZE_OF_LABEL/2)];
         return;
-    } else if (diff < SIZE_OF_LABEL + 10) {
+    } else if (diff < SIZE_OF_LABEL + 10 || diff < self.frame.size.width) {
         for (int i = 0; i < self.labels.count; i++) {
             UILabel *label = [self.labels objectAtIndex:i];
             if (i == currentPage - 1) {

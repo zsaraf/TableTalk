@@ -8,7 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		92016017185EEEDE009A93A7 /* debugImage@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92016016185EEEDE009A93A7 /* debugImage@2x.jpg */; };
-		921BD1E11860069300CBB901 /* PlayerJoinedGameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 921BD1E01860069300CBB901 /* PlayerJoinedGameView.m */; };
+		921BD1EC18612A4900CBB901 /* TableTalkButton2.png in Resources */ = {isa = PBXBuildFile; fileRef = 921BD1EA18612A4900CBB901 /* TableTalkButton2.png */; };
+		921BD1ED18612A4900CBB901 /* TableTalkButton2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 921BD1EB18612A4900CBB901 /* TableTalkButton2@2x.png */; };
+		921BD1F318616A8700CBB901 /* DisplayScoresTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 921BD1F218616A8700CBB901 /* DisplayScoresTableView.m */; };
+		921BD1F618616BC000CBB901 /* PlayerScoreTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 921BD1F518616BC000CBB901 /* PlayerScoreTableViewCell.m */; };
+		921BD1F91861712700CBB901 /* DebugScoresViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 921BD1F81861712700CBB901 /* DebugScoresViewController.m */; };
 		9220569B183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9220569A183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m */; };
 		92213BB81820A7B300A4E574 /* UIImage+ImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 92213BB71820A7B300A4E574 /* UIImage+ImageEffects.m */; };
 		92213BBC1820AB8F00A4E574 /* UIImage+Crop.m in Sources */ = {isa = PBXBuildFile; fileRef = 92213BBB1820AB8F00A4E574 /* UIImage+Crop.m */; };
@@ -110,8 +114,14 @@
 		018FC19AF07D4622A18A2F32 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		6FA694B38B354E8A8B1EA62E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		92016016185EEEDE009A93A7 /* debugImage@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "debugImage@2x.jpg"; sourceTree = "<group>"; };
-		921BD1DF1860069300CBB901 /* PlayerJoinedGameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerJoinedGameView.h; sourceTree = "<group>"; };
-		921BD1E01860069300CBB901 /* PlayerJoinedGameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerJoinedGameView.m; sourceTree = "<group>"; };
+		921BD1EA18612A4900CBB901 /* TableTalkButton2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TableTalkButton2.png; sourceTree = "<group>"; };
+		921BD1EB18612A4900CBB901 /* TableTalkButton2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "TableTalkButton2@2x.png"; sourceTree = "<group>"; };
+		921BD1F118616A8700CBB901 /* DisplayScoresTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisplayScoresTableView.h; sourceTree = "<group>"; };
+		921BD1F218616A8700CBB901 /* DisplayScoresTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisplayScoresTableView.m; sourceTree = "<group>"; };
+		921BD1F418616BC000CBB901 /* PlayerScoreTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerScoreTableViewCell.h; sourceTree = "<group>"; };
+		921BD1F518616BC000CBB901 /* PlayerScoreTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerScoreTableViewCell.m; sourceTree = "<group>"; };
+		921BD1F71861712700CBB901 /* DebugScoresViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugScoresViewController.h; sourceTree = "<group>"; };
+		921BD1F81861712700CBB901 /* DebugScoresViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugScoresViewController.m; sourceTree = "<group>"; };
 		92205699183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlurredWaitingForPlayersToFinishView.h; path = ../BlurredWaitingForPlayersToFinishView.h; sourceTree = "<group>"; };
 		9220569A183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BlurredWaitingForPlayersToFinishView.m; path = ../BlurredWaitingForPlayersToFinishView.m; sourceTree = "<group>"; };
 		92213BB61820A7B300A4E574 /* UIImage+ImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ImageEffects.h"; sourceTree = "<group>"; };
@@ -381,8 +391,12 @@
 		92A8CC1717E7278700B32FC1 = {
 			isa = PBXGroup;
 			children = (
-				921BD1DF1860069300CBB901 /* PlayerJoinedGameView.h */,
-				921BD1E01860069300CBB901 /* PlayerJoinedGameView.m */,
+				921BD1F71861712700CBB901 /* DebugScoresViewController.h */,
+				921BD1F81861712700CBB901 /* DebugScoresViewController.m */,
+				921BD1F118616A8700CBB901 /* DisplayScoresTableView.h */,
+				921BD1F218616A8700CBB901 /* DisplayScoresTableView.m */,
+				921BD1F418616BC000CBB901 /* PlayerScoreTableViewCell.h */,
+				921BD1F518616BC000CBB901 /* PlayerScoreTableViewCell.m */,
 				92016016185EEEDE009A93A7 /* debugImage@2x.jpg */,
 				92B62C00185ED8A600B4F58E /* DebugViewController.h */,
 				92B62C01185ED8A600B4F58E /* DebugViewController.m */,
@@ -582,6 +596,8 @@
 		92DC83CA18484E5F00ECB495 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				921BD1EA18612A4900CBB901 /* TableTalkButton2.png */,
+				921BD1EB18612A4900CBB901 /* TableTalkButton2@2x.png */,
 				92DC83CD1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg */,
 				92DC83CE1848513C00ECB495 /* NewFriendsTablefeb25th.jpg */,
 				92DC83CB1848511900ECB495 /* TableTalkButton.png */,
@@ -679,12 +695,14 @@
 				92DC83CC1848511900ECB495 /* TableTalkButton.png in Resources */,
 				9243134C180B3D4D00A682D0 /* LICENSE in Resources */,
 				9243134A180B3D4D00A682D0 /* .gitignore in Resources */,
+				921BD1ED18612A4900CBB901 /* TableTalkButton2@2x.png in Resources */,
 				92A8CC3C17E7278700B32FC1 /* Images.xcassets in Resources */,
 				9243134D180B3D4D00A682D0 /* README.md in Resources */,
 				92DC83CF1848513C00ECB495 /* NewFriendsTablefeb25th@2x.jpg in Resources */,
 				92DC83D01848513C00ECB495 /* NewFriendsTablefeb25th.jpg in Resources */,
 				9243134B180B3D4D00A682D0 /* .gitmodules in Resources */,
 				92016017185EEEDE009A93A7 /* debugImage@2x.jpg in Resources */,
+				921BD1EC18612A4900CBB901 /* TableTalkButton2.png in Resources */,
 				92A8CC2E17E7278700B32FC1 /* InfoPlist.strings in Resources */,
 				92A8CC3717E7278700B32FC1 /* Main.storyboard in Resources */,
 			);
@@ -739,8 +757,8 @@
 				92CE27FF180CC1280089B2ED /* SDWebImageDownloaderOperation.m in Sources */,
 				9220569B183322A8005274B9 /* BlurredWaitingForPlayersToFinishView.m in Sources */,
 				92CE2805180CC1280089B2ED /* UIImage+WebP.m in Sources */,
+				921BD1F91861712700CBB901 /* DebugScoresViewController.m in Sources */,
 				92CE2806180CC1280089B2ED /* UIImageView+WebCache.m in Sources */,
-				921BD1E11860069300CBB901 /* PlayerJoinedGameView.m in Sources */,
 				92CE2801180CC1280089B2ED /* SDWebImagePrefetcher.m in Sources */,
 				9243131D180B2FE600A682D0 /* SBJsonStreamParserAccumulator.m in Sources */,
 				92213BB81820A7B300A4E574 /* UIImage+ImageEffects.m in Sources */,
@@ -776,12 +794,14 @@
 				92CE2804180CC1280089B2ED /* UIImage+MultiFormat.m in Sources */,
 				9243131F180B2FE600A682D0 /* SBJsonStreamParserState.m in Sources */,
 				92431322180B2FE700A682D0 /* SBJsonStreamWriterAccumulator.m in Sources */,
+				921BD1F318616A8700CBB901 /* DisplayScoresTableView.m in Sources */,
 				92E919AD185E9AA400E5460E /* Player.m in Sources */,
 				92CE27F9180CC1280089B2ED /* MKAnnotationView+WebCache.m in Sources */,
 				92CE2802180CC1280089B2ED /* UIButton+WebCache.m in Sources */,
 				92431321180B2FE700A682D0 /* SBJsonStreamWriter.m in Sources */,
 				92431350180B3D4D00A682D0 /* SocketIOPacket.m in Sources */,
 				92CE2803180CC1280089B2ED /* UIImage+GIF.m in Sources */,
+				921BD1F618616BC000CBB901 /* PlayerScoreTableViewCell.m in Sources */,
 				92CE27FE180CC1280089B2ED /* SDWebImageDownloader.m in Sources */,
 				9243134E180B3D4D00A682D0 /* SocketIO.m in Sources */,
 				92431323180B2FE700A682D0 /* SBJsonStreamWriterState.m in Sources */,

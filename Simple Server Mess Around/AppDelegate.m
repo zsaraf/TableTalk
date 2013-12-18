@@ -11,6 +11,7 @@
 #import "GamePhotoScrollViewController.h"
 #import "JudgeViewController.h"
 #import "DebugViewController.h"
+#import "DebugScoresViewController.h"
 
 @implementation AppDelegate
 
@@ -26,12 +27,15 @@
     NSArray *superlatives = [NSArray arrayWithObjects:@"Most likely to sleep with a stripper", @"Most likely to laugh at a midget", @"Most likely to twerk at her own wedding", @"Would make the best sandwich under pressure", nil];
     JudgeViewController *vc = [[JudgeViewController alloc] initWithPlayers:players superlatives:superlatives];
     [self.window setRootViewController:vc];*/
-    /*NSArray *friendsArray = [NSArray arrayWithObjects:@"521242550",@"521827780",@"524372404",@"524693200",@"524747587", nil];//, @"588688409", @"1323098301", nil];
-    GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friendsArray isJudge:NO];
+    /*NSArray *friendsArray = [NSArray arrayWithObjects:@"521242550",@"521827780",@"524372404",@"524693200",@"524747587", @"588688409", @"1323098301", nil];
+    GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friendsArray superlative:@"Great dick."];
     [self.window setRootViewController:vc];*/
     
     //DebugViewController *vc = [[DebugViewController alloc] init];
     //[self.window setRootViewController:vc];
+    
+    /*DebugScoresViewController *vc = [[DebugScoresViewController alloc] init];
+    [self.window setRootViewController:vc];*/
     
     // Override point for customization after application launch.
     return YES;

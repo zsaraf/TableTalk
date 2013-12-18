@@ -34,11 +34,18 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    NSArray *array = [NSArray arrayWithObjects:@" Zach Saraf",
+                      @" Donny Giovaninni",
+                      @" Riley Marangi",
+                      @" Alex Grover",
+                      @" Brian Wong",
+                      nil];
     NSMutableArray *choices = [[NSMutableArray alloc] init];
     for (int i = 0; i < 5; i ++) {
         Choice *choice = [[Choice alloc] initWithFbId:@"" chosenByFbId:@""];
         choice.image = [UIImage imageNamed:@"debugImage.jpg"];
-        choice.name = [NSString stringWithFormat:@"Name %d", i];
+        choice.name = array[i];
         [choices addObject:choice];
     }
     JudgeChoosingWinnerPhotoScrollView *v = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:self.view.bounds choices:choices];

@@ -209,47 +209,6 @@
     }];
 }
 
-/*-(IBAction)screenTapped:(UITapGestureRecognizer *)sender
-{
-    // MUST UNCOMMENT THIS --ZWS
-    //SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
-    
-    // MUST REMOVE THIS, ONLY USED FOR FAST DEBUGGING. --ZWS
-    SuperlativeCardView *v = [self.views firstObject];
-    
-    if (v) {
-        self.currentlySelected = v.index;
-        CGFloat enabledSize = self.view.frame.size.height* ENABLED_CONSTANT;
-        CGFloat disabledSize = (self.view.frame.size.height - enabledSize)/3;
-        // animate superlative being enabled and others being disabled
-        [UIView animateWithDuration:.3 animations:^{
-            CGFloat totalHeight = 0;
-            for (int i = 0; i < self.views.count; i++) {
-                if (i == v.index) {
-                    [v setFrame:CGRectMake(0, totalHeight, self.view.frame.size.width, enabledSize)];
-                    totalHeight += enabledSize;
-                    [v setShowAll];
-                } else {
-                    SuperlativeCardView *view = [self.views objectAtIndex:i];
-                    [view setFrame:CGRectMake(0, totalHeight, self.view.frame.size.width, disabledSize)];
-                    totalHeight += disabledSize;
-                    [view setHideAll];
-                }
-            }
-        }];
-    }
-}*/
-
--(void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
--(void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -262,8 +221,6 @@
     id json = packet.dataAsJSON;
     if ([[json objectForKey:@"name"] isEqualToString:@"startJudging"]) {
         NSArray *fbIDs = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
-        //GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:fbIDs isJudge:YES];
-        //[self.navigationController pushViewController:vc animated:YES];
     } else if ([[json objectForKey:@"name"] isEqualToString:@"playerFinished"]) {
         NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"userID"];
         NSString *selectedFbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
