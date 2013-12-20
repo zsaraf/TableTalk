@@ -97,6 +97,7 @@
 		92DE01D8181F9759007F3657 /* FriendCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = 92DE01D7181F9759007F3657 /* FriendCardView.m */; };
 		92E919AD185E9AA400E5460E /* Player.m in Sources */ = {isa = PBXBuildFile; fileRef = 92E919AC185E9AA400E5460E /* Player.m */; };
 		92EB67641811E9C200CCCF8D /* JudgeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 92EB67631811E9C200CCCF8D /* JudgeViewController.m */; };
+		92F123BA186436FE00548B81 /* Card.m in Sources */ = {isa = PBXBuildFile; fileRef = 92F123B9186436FE00548B81 /* Card.m */; };
 		94368415E3374406896B29DD /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FA694B38B354E8A8B1EA62E /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -267,6 +268,8 @@
 		92E919AC185E9AA400E5460E /* Player.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Player.m; path = ../Player.m; sourceTree = "<group>"; };
 		92EB67621811E9C200CCCF8D /* JudgeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JudgeViewController.h; path = ../JudgeViewController.h; sourceTree = "<group>"; };
 		92EB67631811E9C200CCCF8D /* JudgeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JudgeViewController.m; path = ../JudgeViewController.m; sourceTree = "<group>"; };
+		92F123B8186436FE00548B81 /* Card.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Card.h; sourceTree = "<group>"; };
+		92F123B9186436FE00548B81 /* Card.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Card.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -391,6 +394,8 @@
 		92A8CC1717E7278700B32FC1 = {
 			isa = PBXGroup;
 			children = (
+				92F123B8186436FE00548B81 /* Card.h */,
+				92F123B9186436FE00548B81 /* Card.m */,
 				921BD1F71861712700CBB901 /* DebugScoresViewController.h */,
 				921BD1F81861712700CBB901 /* DebugScoresViewController.m */,
 				921BD1F118616A8700CBB901 /* DisplayScoresTableView.h */,
@@ -762,6 +767,7 @@
 				92CE2801180CC1280089B2ED /* SDWebImagePrefetcher.m in Sources */,
 				9243131D180B2FE600A682D0 /* SBJsonStreamParserAccumulator.m in Sources */,
 				92213BB81820A7B300A4E574 /* UIImage+ImageEffects.m in Sources */,
+				92F123BA186436FE00548B81 /* Card.m in Sources */,
 				92CE27FB180CC1280089B2ED /* SDImageCache.m in Sources */,
 				92CE2800180CC1280089B2ED /* SDWebImageManager.m in Sources */,
 				924312FE180B2EC600A682D0 /* NSData+SRB64Additions.m in Sources */,

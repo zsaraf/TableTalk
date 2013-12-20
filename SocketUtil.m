@@ -32,7 +32,7 @@
 - (void) socketIODidConnect:(SocketIO *)socket
 {
     NSLog(@"connected");
-    [self.socketIO sendEvent:@"joinTable" withData:[NSDictionary dictionaryWithObjectsAndKeys: self.groupId, @"groupID", [[NSUserDefaults standardUserDefaults] objectForKey:@"friendIds"], @"friends", [[PFUser currentUser] objectForKey:@"fbId"],@"userID", nil]];
+    [self.socketIO sendEvent:@"joinTable" withData:[NSDictionary dictionaryWithObjectsAndKeys: self.groupId, @"groupID", [[NSUserDefaults standardUserDefaults] objectForKey:@"friendIds"], @"friends", [[PFUser currentUser] objectForKey:@"fbId"],@"fbID", nil]];
     if ([self.delegate respondsToSelector:@selector(socketDidConnect)]) {
         [self.delegate socketDidConnect];
     }
@@ -40,7 +40,12 @@
 
 -(void)sendBeginGameMessageWithSuperlative:(NSString *)superlative
 {
-    [self.socketIO sendEvent:@"startGame" withData:superlative];
+    [self.socketIO sendEvent:@"superlative" withData:superlative];
+}
+
+-(void)sendReadyToPlayMessage
+{
+    [self.socketIO sendEvent:@"startGame" withData:nil];
 }
 
 

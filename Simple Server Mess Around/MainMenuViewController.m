@@ -14,6 +14,8 @@
 #import "BlurUtils.h"
 #import <QuartzCore/QuartzCore.h>
 #import "GamePhotoScrollViewController.h"
+#import "LoginViewController.h"
+#import "JudgeViewController.h"
 
 @interface MainMenuViewController ()
 
@@ -25,6 +27,13 @@
 @property (nonatomic, strong) NSArray *superlatives;
 @property (nonatomic, strong) NSMutableArray *playerBlurbs;
 @property (nonatomic, strong) UILabel *labelView;
+@property (nonatomic) BOOL hasFinishedAnimatingToLookingForGame;
+
+// This is if this player will play, not judge.
+@property (nonatomic, strong) NSString *superlative;
+@property (nonatomic) NSInteger numCardDataRetrieved;
+@property (nonatomic, strong) NSMutableArray *friends;
+@property (nonatomic) BOOL isReadyToDisplayFriendCards;
 
 @end
 
@@ -48,7 +57,13 @@
     // Send request to Facebook
     [request startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
         // handle response
-        if (!error) {
+        if (error) {
+            [PFUser logOut];
+            
+            LoginViewController *lvc = [[UIStoryboard storyboardWithName:@"main" bundle:nil] instantiateViewControllerWithIdentifier:@"loginViewController"];
+            [self.navigationController pushViewController:lvc animated:NO];
+            
+        } else {
             // result is a dictionary with the user's Facebook data
             NSDictionary *userData = (NSDictionary *)result;
             [[PFUser currentUser] setObject:userData forKey:@"profile"];
@@ -168,6 +183,7 @@
 
 -(IBAction)goButtonPressed:(id)sender
 {
+    [self.goButton setUserInteractionEnabled:NO];
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         if (!error) {
             [PFCloud callFunctionInBackground:@"findNearestGameOrMake"
@@ -206,6 +222,17 @@
         [self.labelView setCenter:CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height -1 * (padding + self.labelView.frame.size.height/2))];
     } completion:^(BOOL finished) {
         //NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:2 target:self selector:@selector(timerCalled:) userInfo:Nil repeats:YES];
+        self.hasFinishedAnimatingToLookingForGame = YES;
+        if (self.playerBlurbs.count != 0) {
+            [self reorganizeBlurbsWithCompletionHandler:^{
+                for (UIImageView *playerBlurb in self.playerBlurbs) {
+                    [self.view bringSubviewToFront:playerBlurb];
+                    [UIView animateWithDuration:1 animations:^{
+                        [playerBlurb setAlpha:1.0];
+                    }];
+                }
+            }];
+        }
     }];
     /*[UIView animateWithDuration:.5 animations:^{
      [self.goButton setTransform:CGAffineTransformRotate(self.goButton.transform, 90.0f)];
@@ -241,6 +268,69 @@
     [[TableTalkUtil instance].players setObject:player forKey:fbId];
 }
 
+-(void)reorganizeBlurbsWithCompletionHandler:(void (^)())block;
+{
+    [UIView animateWithDuration:.5 animations:^{
+        for (int i = 0; i < self.playerBlurbs.count; i++) {
+            CGPoint center = CGPointMake(self.goButton.center.x + self.goButton.frame.size.width/2 * cos(i * 2 * M_PI/self.playerBlurbs.count + 3 * M_PI/2), self.goButton.center.y + self.goButton.frame.size.width/2 * sin(i * 2 * M_PI/self.playerBlurbs.count + 3 * M_PI/2));
+            [[self.playerBlurbs objectAtIndex:i] setCenter:center];
+        }
+    } completion:^(BOOL finished) {
+        if (block) {
+            block();
+        }
+    }];
+}
+
+-(void)animateAddingGreenCircleAroundPlayer:(Player *)player
+{
+    UIImageView *theImgView;
+    for (UIImageView *imgView in self.playerBlurbs) {
+        if ([imgView.image isEqual:player.image]) {
+            theImgView = imgView;
+            //imgView.layer.borderWidth = 2;
+            //imgView.layer.borderColor = [[UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:1.] CGColor];
+        }
+    }
+    
+    // Set up the shape of the circle
+    int radius = theImgView.frame.size.width/2 - 1;
+    CAShapeLayer *circle = [CAShapeLayer layer];
+    // Make a circular shape
+    circle.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 2.0*radius, 2.0*radius)
+                                             cornerRadius:radius].CGPath;
+    // Center the shape in self.view
+    circle.position = CGPointMake(CGRectGetMidX(theImgView.bounds)-radius,
+                                  CGRectGetMidY(theImgView.bounds)-radius);
+    
+    // Configure the apperence of the circle
+    circle.fillColor = [UIColor clearColor].CGColor;
+    circle.strokeColor = [UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:1.].CGColor;
+    circle.lineWidth = 2;
+    
+    // Add to parent layer
+    [theImgView.layer addSublayer:circle];
+    
+    // Configure animation
+    CABasicAnimation *drawAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    drawAnimation.duration            = 1; // "animate over 10 seconds or so.."
+    drawAnimation.repeatCount         = 1.0;  // Animate only once..
+    drawAnimation.removedOnCompletion = NO;   // Remain stroked after the animation..
+    
+    // Animate from no part of the stroke being drawn to the entire stroke being drawn
+    drawAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
+    drawAnimation.toValue   = [NSNumber numberWithFloat:1.0f];
+    
+    // Experiment with timing to get the appearence to look the way you want
+    drawAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    
+    // Add the animation to the circle
+    [circle addAnimation:drawAnimation forKey:@"drawCircleAnimation"];
+    
+    
+    
+}
+
 -(void)playerDidFinishDownloadingImageAndName:(Player *)player
 {
     static NSInteger counter = 0;
@@ -257,18 +347,14 @@
     UIImageView *circleImageView = [[UIImageView alloc] initWithFrame:CGRectMake(-50, -50, 50, 50)];
     [circleImageView setImage:player.image];
     [circleImageView setClipsToBounds:YES];
+    if (!self.hasFinishedAnimatingToLookingForGame) {
+        [circleImageView setAlpha:0.];
+    }
     [self.view addSubview:circleImageView];
     circleImageView.layer.cornerRadius = circleImageView.frame.size.height/2;
     [self.playerBlurbs addObject:circleImageView];
     
-    if (counter == 1) return;
-    
-    [UIView animateWithDuration:.5 animations:^{
-        for (int i = 0; i < self.playerBlurbs.count; i++) {
-            CGPoint center = CGPointMake(self.goButton.center.x + self.goButton.frame.size.width/2 * cos(i * 2 * M_PI/self.playerBlurbs.count + 3 * M_PI/2), self.goButton.center.y + self.goButton.frame.size.width/2 * sin(i * 2 * M_PI/self.playerBlurbs.count + 3 * M_PI/2));
-            [[self.playerBlurbs objectAtIndex:i] setCenter:center];
-        }
-    }];
+    [self reorganizeBlurbsWithCompletionHandler:nil];
     
     if (counter == 2) {
         UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 80, self.view.frame.size.width, 80)];
@@ -290,18 +376,34 @@
                 [button setAlpha:1];
             }];
         }];
-     }
+    }
+}
+
+-(void)cardDidFinishDownloadingImageAndName:(Card *)card
+{
+    self.numCardDataRetrieved ++;
+    
+    if (self.numCardDataRetrieved == self.friends.count && self.isReadyToDisplayFriendCards) {
+        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:self.friendIds superlative:self.superlative];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
 }
 
 -(IBAction)beginGameButtonTapped:(UIButton *)sender
 {
-    
+    [self animateAddingGreenCircleAroundPlayer:[TableTalkUtil instance].me];
+    [[TableTalkUtil appDelegate].socket sendReadyToPlayMessage];
 }
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet
 {
     // ZWS-TODO: playerJoined:fbId
-    if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"initialPlayers"]) {
+    if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"playerSentStartGame"]) {
+        NSString *fbId = [[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0];
+        Player *player = [[TableTalkUtil instance].players objectForKey:fbId];
+        [self animateAddingGreenCircleAroundPlayer:player];
+        NSLog(@"player %@ sent start game", fbId);
+    } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"initialPlayers"]) {
         NSArray *players = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"otherPlayers"];
         self.superlatives = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlatives"];
         for (NSString *fbId in players) {
@@ -310,11 +412,30 @@
         // if judge you will receive superlatives
     } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"playerJoined"]) {
         [self addPlayerToDictionary:[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0]];
-    } else {
-        NSArray *friends = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
-        NSString *superlative = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlative"];
-        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friends superlative:superlative];
-        [self.navigationController pushViewController:vc animated:YES];
+    } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"judgePickingSuperlative"]) {
+        if (self.superlatives) {
+            JudgeViewController *jvc = [[JudgeViewController alloc] initWithPlayers:nil superlatives:self.superlatives];
+            [self.navigationController pushViewController:jvc animated:YES];
+        } else {
+            self.friendIds = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
+            NSLog(@"is player");
+            self.friends = [[NSMutableArray alloc] init];
+            for (NSString *fbId in self.friendIds) {
+                Card *card = [[Card alloc] initWithFbId:fbId];
+                card.delegate = self;
+                [self.friends addObject:card];
+            }
+        }
+    } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"startRound"]) {
+        NSString *superlative = [[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0];
+        
+        if (self.numCardDataRetrieved == self.friends.count) {
+            GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:self.friendIds superlative:superlative];
+            [self.navigationController pushViewController:vc animated:YES];
+        } else {
+            self.superlative = superlative;
+            self.isReadyToDisplayFriendCards = YES;
+        }
     }
 }
 

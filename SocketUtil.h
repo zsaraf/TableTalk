@@ -24,6 +24,7 @@
 -(void)sendBeginGameMessageWithSuperlative:(NSString *)superlative;
 -(void)sendChoseFriendMessage:(NSString *)friendId;
 -(void)sendChoseWinnerMessage:(NSString *)friendId;
+-(void)sendReadyToPlayMessage;
 
 @property (nonatomic, strong) NSString *groupId;
 @property (nonatomic, strong) id<SocketUtilDelegate> delegate;
