@@ -46,7 +46,7 @@
         [self addSubview:self.blurredImgView];
         [self addSubview:self.imgView];
         UIView *blueView = [[UIView alloc] initWithFrame:self.bounds];
-        [blueView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1. alpha:.2]];
+        [blueView setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:1. alpha:.08]];
         [self addSubview:blueView];
         
         UIFont *font = [UIFont fontWithName:@"Futura-Medium" size:20];

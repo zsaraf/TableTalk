@@ -10,8 +10,8 @@
 #import "TableTalkUtil.h"
 #import "FriendCardView.h"
 
-@interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate, NSURLConnectionDelegate, FriendCardViewDelegate>
+@interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate, NSURLConnectionDelegate>
 
--(id)initWithCardFBIds:(NSArray *)fbIDs superlative:(NSString *)superlative;
+-(id)initWithCards:(NSArray *)cards superlative:(NSString *) superlative;
 
 @end

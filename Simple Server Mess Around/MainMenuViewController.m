@@ -29,6 +29,8 @@
 @property (nonatomic, strong) UILabel *labelView;
 @property (nonatomic) BOOL hasFinishedAnimatingToLookingForGame;
 
+@property (nonatomic, strong) UIButton *readyToPlayButton;
+
 // This is if this player will play, not judge.
 @property (nonatomic, strong) NSString *superlative;
 @property (nonatomic) NSInteger numCardDataRetrieved;
@@ -234,9 +236,6 @@
             }];
         }
     }];
-    /*[UIView animateWithDuration:.5 animations:^{
-     [self.goButton setTransform:CGAffineTransformRotate(self.goButton.transform, 90.0f)];
-     }];*/
 }
 
 -(IBAction)timerCalled:(id)sender
@@ -288,8 +287,6 @@
     for (UIImageView *imgView in self.playerBlurbs) {
         if ([imgView.image isEqual:player.image]) {
             theImgView = imgView;
-            //imgView.layer.borderWidth = 2;
-            //imgView.layer.borderColor = [[UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:1.] CGColor];
         }
     }
     
@@ -305,7 +302,7 @@
     
     // Configure the apperence of the circle
     circle.fillColor = [UIColor clearColor].CGColor;
-    circle.strokeColor = [UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:1.].CGColor;
+    circle.strokeColor = [UIColor colorWithRed:46/255. green:244/255. blue:113/255. alpha:1.].CGColor;
     circle.lineWidth = 2;
     
     // Add to parent layer
@@ -329,6 +326,20 @@
     
     
     
+}
+
+- (UIImage *)imageWithColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0.0f, 0.0f, 1.0f, 1.0f);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    CGContextSetFillColorWithColor(context, [color CGColor]);
+    CGContextFillRect(context, rect);
+    
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return image;
 }
 
 -(void)playerDidFinishDownloadingImageAndName:(Player *)player
@@ -357,23 +368,27 @@
     [self reorganizeBlurbsWithCompletionHandler:nil];
     
     if (counter == 2) {
-        UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 80, self.view.frame.size.width, 80)];
-        [button setBackgroundColor:[UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:1.]];
-        [[button titleLabel] setTextColor:[UIColor whiteColor]];
-        [[button titleLabel] setFont:[UIFont fontWithName:@"Futura-Medium" size:20]];
-        [[button titleLabel] setTextAlignment:NSTextAlignmentCenter];
-        [[button titleLabel] setLineBreakMode:NSLineBreakByWordWrapping];
-        [button setAlpha:0.];
-        [button setTitleEdgeInsets:UIEdgeInsetsMake(0, 20, 0, 20)];
-        [button setTitle:@"Tap when all of your friends are at the table" forState:UIControlStateNormal];
-        [button addTarget:self action:@selector(beginGameButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-        [self.view addSubview:button];
+        self.readyToPlayButton = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 80, self.view.frame.size.width, 80)];
+        UIImage *backgroundImage = [self imageWithColor:[UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:1.]];
+        UIImage *selectedBackgroundImage = [self imageWithColor:[UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:.5]];
+        
+        [self.readyToPlayButton setBackgroundImage:backgroundImage forState:UIControlStateNormal];
+        [self.readyToPlayButton setBackgroundImage:selectedBackgroundImage forState:UIControlStateHighlighted];
+        [[self.readyToPlayButton titleLabel] setTextColor:[UIColor whiteColor]];
+        [[self.readyToPlayButton titleLabel] setFont:[UIFont fontWithName:@"Futura-Medium" size:20]];
+        [[self.readyToPlayButton titleLabel] setTextAlignment:NSTextAlignmentCenter];
+        [[self.readyToPlayButton titleLabel] setLineBreakMode:NSLineBreakByWordWrapping];
+        [self.readyToPlayButton setAlpha:0.];
+        [self.readyToPlayButton setTitleEdgeInsets:UIEdgeInsetsMake(0, 20, 0, 20)];
+        [self.readyToPlayButton setTitle:@"Tap when all of your friends are at the table" forState:UIControlStateNormal];
+        [self.readyToPlayButton addTarget:self action:@selector(beginGameButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+        [self.view addSubview:self.readyToPlayButton];
         // rgb(46, 204, 113)
         [UIView animateWithDuration:.5 animations:^{
             [self.labelView setFrame:CGRectOffset(self.labelView.frame, 0, 100)];
         } completion:^(BOOL finished) {
             [UIView animateWithDuration:.5 animations:^{
-                [button setAlpha:1];
+                [self.readyToPlayButton setAlpha:1];
             }];
         }];
     }
@@ -384,15 +399,72 @@
     self.numCardDataRetrieved ++;
     
     if (self.numCardDataRetrieved == self.friends.count && self.isReadyToDisplayFriendCards) {
-        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:self.friendIds superlative:self.superlative];
+        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCards:self.friends superlative:self.superlative];
         [self.navigationController pushViewController:vc animated:YES];
     }
 }
 
 -(IBAction)beginGameButtonTapped:(UIButton *)sender
 {
+    if (self.goButton.alpha != 0) {
+        [UIView animateWithDuration:.5 animations:^{
+            [self.readyToPlayButton setFrame:CGRectOffset(self.readyToPlayButton.frame, 0, self.view.frame.size.height - self.readyToPlayButton.frame.origin.y)];
+        } completion:^(BOOL finished) {
+            [self.readyToPlayButton removeFromSuperview];
+            [self.labelView setText:@"Waiting for other players to begin game..."];
+            [self.labelView setLineBreakMode:NSLineBreakByWordWrapping];
+            [self.labelView setNumberOfLines:2];
+            [self.labelView setFont:[UIFont fontWithName:@"Futura-Medium" size:18]];
+            CGFloat labelHeight = 100;
+            [self.labelView setAlpha:0];
+            [self.labelView setFrame:CGRectMake(0, self.view.frame.size.height -100, self.view.frame.size.width, labelHeight)];
+            [UIView animateWithDuration:.5 animations:^{
+                [self.labelView setAlpha:1];
+            }];
+        }];
+    }
     [self animateAddingGreenCircleAroundPlayer:[TableTalkUtil instance].me];
     [[TableTalkUtil appDelegate].socket sendReadyToPlayMessage];
+    
+}
+
+-(IBAction)judgeTappedOnScreen:(id)sender
+{
+    JudgeViewController *jvc = [[JudgeViewController alloc] initWithPlayers:nil superlatives:self.superlatives];
+    
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = .3;
+    transition.type = kCATransitionFade;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
+    [self.navigationController pushViewController:jvc animated:NO];
+}
+
+-(void)animateShowingJudgeIsPickingSuperlative
+{
+    [self.labelView.layer removeAllAnimations];
+    [UIView animateWithDuration:.5 animations:^{
+        for (UIImageView *imgView in self.playerBlurbs) {
+            [imgView setAlpha:0];
+        }
+        [self.goButton setAlpha:0];
+    } completion:^(BOOL finished) {
+        [self.labelView.layer removeAllAnimations];
+        [UIView animateWithDuration:.5 animations:^{
+            if (!self.superlatives) {
+                [self.labelView setText:@"Judge is picking superlative"];
+            } else {
+                [self.labelView setText:@"You are the first judge. Tap anywhere to begin picking your superlative."];
+            }
+            [self.labelView setCenter:CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2)];
+        } completion:^(BOOL finished) {
+            if (self.superlatives) {
+                UITapGestureRecognizer *judgeTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(judgeTappedOnScreen:)];
+                [self.view addGestureRecognizer:judgeTapRecognizer];
+            }
+        }];
+    }];
 }
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet
@@ -414,23 +486,24 @@
         [self addPlayerToDictionary:[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0]];
     } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"judgePickingSuperlative"]) {
         if (self.superlatives) {
-            JudgeViewController *jvc = [[JudgeViewController alloc] initWithPlayers:nil superlatives:self.superlatives];
-            [self.navigationController pushViewController:jvc animated:YES];
+            [self animateShowingJudgeIsPickingSuperlative];
         } else {
+            [self animateShowingJudgeIsPickingSuperlative];
+            
             self.friendIds = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
-            NSLog(@"is player");
             self.friends = [[NSMutableArray alloc] init];
             for (NSString *fbId in self.friendIds) {
                 Card *card = [[Card alloc] initWithFbId:fbId];
                 card.delegate = self;
                 [self.friends addObject:card];
             }
+            
         }
     } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"startRound"]) {
         NSString *superlative = [[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0];
         
         if (self.numCardDataRetrieved == self.friends.count) {
-            GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:self.friendIds superlative:superlative];
+            GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCards:self.friends superlative:superlative];
             [self.navigationController pushViewController:vc animated:YES];
         } else {
             self.superlative = superlative;

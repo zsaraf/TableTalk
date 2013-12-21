@@ -33,7 +33,8 @@
         UIFont *myFont = [UIFont fontWithName:@"Futura-Medium" size:22];
         CGRect rect = [superlative boundingRectWithSize:CGSizeMake(7*self.frame.size.width/8, self.frame.size.height) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:myFont} context:nil];
         NSLog(@"%f %f %f %f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
-        self.superlativeLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width/16, self.frame.size.height/2 - rect.size.height/2, 7*self.frame.size.width/8, rect.size.height)];
+//        self.superlativeLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.frame.size.width/16, self.frame.size.height/2 - rect.size.height/2, 7*self.frame.size.width/8, rect.size.height)];
+        self.superlativeLabel = [[UILabel alloc] initWithFrame:self.bounds];
         [self.superlativeLabel setFont:myFont];
         [self.superlativeLabel setNumberOfLines:0];
         [self.superlativeLabel setText:self.superlative];
@@ -57,6 +58,11 @@
     [self.superlativeLabel setAlpha:1.];
 }
 
+-(void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+    [self.superlativeLabel setFrame:self.bounds];
+}
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

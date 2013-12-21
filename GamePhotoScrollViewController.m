@@ -29,6 +29,8 @@
 @property (nonatomic, assign) CGFloat screenWidth;
 @property (nonatomic, strong) NSString *superlative;
 
+@property (nonatomic, strong) NSArray *cards;
+
 @end
 
 @implementation GamePhotoScrollViewController
@@ -42,24 +44,36 @@
     return self;
 }
 
--(id)initWithCardFBIds:(NSArray *)fbIDs superlative:(NSString *)superlative
+-(id)initWithCards:(NSArray *)cards superlative:(NSString *) superlative
 {
     if (self = [super init]) {
         self.scrollViewArray = [[NSMutableArray alloc] init];
         [TableTalkUtil appDelegate].socket.delegate = self;
         self.superlative = superlative;
         self.contentView = [[UIView alloc] init];
-        int index = 0;
-        for (NSString *fbID in fbIDs) {
-            FriendCardView *sv = [[FriendCardView alloc] initWithFBId:fbID andIndex:index isLast:(index == fbIDs.count - 1)];
-            sv.delegate = self;
-            [self.scrollViewArray addObject:sv];
-            [self.contentView insertSubview:sv atIndex:0];
-            index ++;
-        }
+        self.cards = cards;
     }
     return self;
 }
+
+//-(id)initWithCardFBIds:(NSArray *)fbIDs superlative:(NSString *)superlative
+//{
+//    if (self = [super init]) {
+//        self.scrollViewArray = [[NSMutableArray alloc] init];
+//        [TableTalkUtil appDelegate].socket.delegate = self;
+//        self.superlative = superlative;
+//        self.contentView = [[UIView alloc] init];
+//        int index = 0;
+//        for (NSString *fbID in fbIDs) {
+//            FriendCardView *sv = [[FriendCardView alloc] initWithFBId:fbID andIndex:index isLast:(index == fbIDs.count - 1)];
+//            sv.delegate = self;
+//            [self.scrollViewArray addObject:sv];
+//            [self.contentView insertSubview:sv atIndex:0];
+//            index ++;
+//        }
+//    }
+//    return self;
+//}
 
 -(CGFloat)screenWidth
 {
@@ -117,7 +131,7 @@
         WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
         [TableTalkUtil appDelegate].socket.delegate = vc;
         [self.navigationController pushViewController:vc animated:YES];
-        [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:fv.fbID];
+        [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:fv.card.fbId];
         return;
     }
     
@@ -144,7 +158,7 @@
 
 -(CGRect)frameForCardViewAtIndex:(NSInteger)index isInUpState:(BOOL)isInUpState
 {
-    CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
+    CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.cards.count - 1);
     CGRect frame = CGRectMake(0, index * nameHeight, self.contentView.frame.size.width, self.screenWidth);
     if (isInUpState) {
         frame.origin.y -= frame.size.height - nameHeight;
@@ -252,35 +266,39 @@
     // beginning of content code
     [self.contentView setFrame:CGRectMake(0, self.toolbar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.toolbar.frame.size.height)];
     [self.view addSubview:self.contentView];
-    CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.scrollViewArray.count - 1);
-    for (int i = 0; i < self.scrollViewArray.count; i++) {
-        FriendCardView *sv = [self.scrollViewArray objectAtIndex:i];
+    CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.cards.count - 1);
+    for (int i = 0; i < self.cards.count; i++) {
+        Card *card = [self.cards objectAtIndex:i];
+        FriendCardView *sv = [[FriendCardView alloc] initWithFrame:[self frameForCardViewAtIndex:i isInUpState:NO]
+                                                              card:card andIndex:i isLast:i == self.cards.count - 1];
+        [self.scrollViewArray addObject:sv];
         [sv setLabelHeight:nameHeight];
-        CGFloat x = 2*(i % 2) - 1;
-        //if (i == 0) sv.blurredImageViewAlpha = 0.;
-        //else sv.blurredImageViewAlpha = 1.0;
-        sv.blurredImageViewAlpha = 0.;
-        [sv setFrame:CGRectMake(x * self.screenWidth, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
+        if (i == 0) sv.blurredImageViewAlpha = 0.;
+        else sv.blurredImageViewAlpha = 1.0;
+        [self.contentView addSubview:sv];
+        //sv.blurredImageViewAlpha = 0.;
+        //[sv setFrame:CGRectMake(0, (i)*nameHeight, self.contentView.frame.size.width, self.screenWidth)];
+    }
+    
+    for (int i = self.scrollViewArray.count - 1; i >= 0; i--) {
+        [self.contentView bringSubviewToFront:[self.scrollViewArray objectAtIndex:i]];
     }
     
     self.currentPage = 0;
     
-    self.blackView = [[UIView alloc] initWithFrame:self.contentView.bounds];
-    [self.blackView setBackgroundColor:[UIColor blackColor]];
-    [self.contentView addSubview:self.blackView];
-    
-    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    [indicator setFrame:CGRectInset(self.contentView.bounds, 100, 100)];
-    [self.blackView addSubview:indicator];
-    [indicator startAnimating];
+    FriendCardView *v = [self.scrollViewArray firstObject];
+    [v setBlurredImageViewAlpha:0.];
     
     [self.view bringSubviewToFront:self.toolbar];
     
     UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(photoDoubleTapped:)];
     [recognizer setNumberOfTapsRequired:2];
     [self.view addGestureRecognizer:recognizer];
-    
-    
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
 }
 
 

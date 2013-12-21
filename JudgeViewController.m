@@ -53,6 +53,7 @@
         self.choices = [[NSMutableArray alloc] init];
         self.currentlySelected = -1;
         self.superlatives = superlatives;
+        [TableTalkUtil appDelegate].socket.delegate = self;
     }
     return self;
 }
@@ -190,10 +191,13 @@
 -(void)displaySelectedPlayersToBeginJudging
 {
     SuperlativeCardView *scv = [self.views firstObject];
-    self.judgeChoosingWinnerPhotoScrollView = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:CGRectMake(0, scv.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - scv.frame.size.height) choices:self.choices];
+    CGFloat newHeight = 64;
+    
+    
+    self.judgeChoosingWinnerPhotoScrollView = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:CGRectMake(0, scv.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - scv.frame.size.height) choices:self.choices withDesiredEndingBackgroundColor:scv.backgroundColor];
     [self.judgeChoosingWinnerPhotoScrollView setAlpha:0];
     [self.view addSubview:self.judgeChoosingWinnerPhotoScrollView];
-    [UIView animateWithDuration:.5 animations:^{
+    [UIView animateWithDuration:1 animations:^{
         [self.judgeChoosingWinnerPhotoScrollView setAlpha:1];
         for (UIView *v in self.view.subviews) {
             if (v != scv && v != self.judgeChoosingWinnerPhotoScrollView) {
@@ -201,6 +205,10 @@
             }
         }
     } completion:^(BOOL finished) {
+        [UIView animateWithDuration:.5 animations:^{
+            [scv setFrame:CGRectMake(0, 0, self.view.frame.size.width, newHeight)];
+            [self.judgeChoosingWinnerPhotoScrollView setFrame:CGRectMake(0, newHeight, self.view.frame.size.width, self.view.frame.size.height - newHeight)];
+        }];
         for (UIView *v in self.view.subviews) {
             if (v != scv && v != self.judgeChoosingWinnerPhotoScrollView) {
                 [v removeFromSuperview];
@@ -222,7 +230,7 @@
     if ([[json objectForKey:@"name"] isEqualToString:@"startJudging"]) {
         NSArray *fbIDs = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
     } else if ([[json objectForKey:@"name"] isEqualToString:@"playerFinished"]) {
-        NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"userID"];
+        NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
         NSString *selectedFbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
         Choice *choice = [[Choice alloc] initWithFbId:selectedFbId chosenByFbId:fbId];
         choice.delegate = self;

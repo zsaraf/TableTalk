@@ -8,22 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "TableTalkUtil.h"
+#import "Card.h"
 
-@protocol FriendCardViewDelegate
+@interface FriendCardView : UIView
 
--(void)didFinishLoadingImage:(UIImage *)image forIndex:(NSInteger)index;
+-(id)initWithFrame:(CGRect)frame card:(Card *)card andIndex:(NSInteger)index isLast:(BOOL)isLast;
 
-@end
-
-@interface FriendCardView : UIView <NSURLConnectionDelegate>
-
--(id)initWithFBId:(NSString *)fbID andIndex:(NSInteger)index isLast:(BOOL)isLast;
-
-@property (nonatomic, weak) id<FriendCardViewDelegate> delegate;
 @property (nonatomic, assign) NSInteger index;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) UIView *blurredImageViewWrapper;
-@property (nonatomic, strong) NSString *fbID;
+@property (nonatomic, strong) Card *card;
 @property (nonatomic, assign) CGFloat labelHeight;
 @property (nonatomic, assign) CGFloat blurredImageViewAlpha;
 

@@ -38,7 +38,7 @@
             Player *player1 = (Player *)obj1;
             Player *player2 = (Player *)obj2;
             
-            return player1.score - player2.score;
+            return player2.score - player1.score;
         }];
         self.delegate = self;
         self.dataSource = self;

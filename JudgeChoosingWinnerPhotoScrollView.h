@@ -10,7 +10,8 @@
 
 @interface JudgeChoosingWinnerPhotoScrollView : UIScrollView <UIScrollViewDelegate>
 
--(id)initWithFrame:(CGRect)frame choices:(NSArray *)choices;
+-(id)initWithFrame:(CGRect)frame
+           choices:(NSArray *)choices withDesiredEndingBackgroundColor:(UIColor *)desiredEndingBackgroundColor;
 
 @property (nonatomic, strong) NSArray *choices;
 

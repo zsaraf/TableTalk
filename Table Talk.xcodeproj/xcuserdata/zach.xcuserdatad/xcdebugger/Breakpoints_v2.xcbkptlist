@@ -42,29 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FriendCardView.m"
-            timestampString = "406158412.277652"
+            timestampString = "409256375.673676"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
-            landmarkName = "-setFrame:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FriendCardView.m"
-            timestampString = "406160293.562264"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "160"
-            endingLineNumber = "160"
-            landmarkName = "-setBlurredImageViewAlpha:"
-            landmarkType = "5">
+            startingLineNumber = "154"
+            endingLineNumber = "154">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

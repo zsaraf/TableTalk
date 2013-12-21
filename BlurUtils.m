@@ -35,18 +35,17 @@
 +(UIImage *)drawBlur:(UIImageView *)imgView size:(CGSize)size withBlurEffect:(BlurUtilsEffect)effect
 {
     
-    UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
-    NSLog(@"%f %f", size.width, size.height);
-    [imgView drawViewHierarchyInRect:imgView.frame afterScreenUpdates:YES];
+    //UIGraphicsBeginImageContextWithOptions(size, NO, [UIScreen mainScreen].scale);
+    //[imgView drawViewHierarchyInRect:imgView.bounds afterScreenUpdates:YES];
     
-    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage *snapshotImage = imgView.image;//UIGraphicsGetImageFromCurrentImageContext();
     UIImage *blurredSnapshotImage;
     if (effect == BlurUtilsLightEffect) {
         blurredSnapshotImage = [snapshotImage applyLightEffect];
     } else if (effect == BlurUtilsExtraLightEffect) {
         blurredSnapshotImage = [snapshotImage applyExtraLightEffect];
     }
-    UIGraphicsEndImageContext();
+    //UIGraphicsEndImageContext();
     
     return blurredSnapshotImage;
 }

@@ -68,8 +68,8 @@
     } else {
         NSArray *friends = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
         NSString *superlative = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlative"];
-        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friends superlative:superlative];
-        [self.navigationController pushViewController:vc animated:YES];
+        //GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCardFBIds:friends superlative:superlative];
+        //[self.navigationController pushViewController:vc animated:YES];
     }
 }
 
