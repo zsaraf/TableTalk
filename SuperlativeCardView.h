@@ -14,6 +14,11 @@
 -(void)setHideAll;
 -(void)setShowAll;
 
+-(void)addRoundLabelAndNumFinishedLabelWithFinishedCompetionBlock:(void(^)(void))completionBlock;
+-(void)hideRoundAndNumFinishedLabels;
+-(void)setNumFinishedLabelTextWithNumFinished:(NSInteger)numFinished;
+
+
 @property (nonatomic, assign) NSInteger index;
 @property (nonatomic, strong) NSString *superlative;
 

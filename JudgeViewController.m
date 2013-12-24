@@ -14,7 +14,10 @@
 #import "JudgingSelectorChosenFriendCard.h"
 #import "Player.h"
 #import "JudgeChoosingWinnerPhotoScrollView.h"
+#import "UIImage+Crop.h"
+#import "UIImage+ImageEffects.h"
 
+#define SIZE_OF_BLURRED_PLAYER_VIEW 64
 #define ENABLED_CONSTANT .7817
 
 @interface JudgeViewController ()
@@ -85,11 +88,14 @@
 
 -(IBAction)screenDoubleTapped:(UITapGestureRecognizer *)sender
 {
-    SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
-    [self displayPlayerImagesWithSuperlativeView:v];
-    [[TableTalkUtil appDelegate].socket sendBeginGameMessageWithSuperlative:v.superlative];
-    self.views = [[NSMutableArray alloc] initWithObjects:v, nil];
-    
+    if (self.judgeChoosingWinnerPhotoScrollView) {
+        
+    } else {
+        SuperlativeCardView *v = [self getSuperlativeCardForLocationInView:[sender locationInView:self.view]];
+        [self displayPlayerImagesWithSuperlativeView:v];
+        [[TableTalkUtil appDelegate].socket sendBeginGameMessageWithSuperlative:v.superlative];
+        self.views = [[NSMutableArray alloc] initWithObjects:v, nil];
+    }
 }
 
 -(CGFloat)screenWidth
@@ -100,27 +106,35 @@
 
 -(void)setScreenWidth:(CGFloat)screenWidth {}
 
--(void)displayPlayerImagesWithSuperlativeView:(UIView *)superlativeView
+-(void)displayPlayerImagesWithSuperlativeView:(SuperlativeCardView *)superlativeView
 {
     self.playerViews = [[NSMutableArray alloc] init];
     NSMutableDictionary *playersDict = [TableTalkUtil instance].players;
     int i = 0;
     for (NSString *fbId in playersDict) {
         Player *player = [playersDict objectForKey:fbId];
-        BlurredWaitingForPlayersToFinishView *blurView = [[BlurredWaitingForPlayersToFinishView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height/4 + i*(self.view.frame.size.height/12), self.view.frame.size.width, self.view.frame.size.height/12) player:player];
+        BlurredWaitingForPlayersToFinishView *blurView = [[BlurredWaitingForPlayersToFinishView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - (playersDict.count - i)*SIZE_OF_BLURRED_PLAYER_VIEW, self.view.frame.size.width, SIZE_OF_BLURRED_PLAYER_VIEW) player:player];
         [blurView setAlpha:0.];
         [self.view insertSubview:blurView atIndex:0];
         [self.playerViews addObject:blurView];
         i ++;
     }
-    [UIView animateWithDuration:.3 animations:^{
-        [superlativeView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height/4)];
+    [UIView animateWithDuration:.5 animations:^{
+        [superlativeView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
         for (UIView *view in self.views) {
             if (view != superlativeView) {
                 [view setAlpha:0.];
             }
         }
+    } completion:^(BOOL finished) {
         for (UIView *view in self.playerViews) [view setAlpha:1.];
+        
+        __weak SuperlativeCardView *_superlativeView = superlativeView;
+        [superlativeView addRoundLabelAndNumFinishedLabelWithFinishedCompetionBlock:^{
+            [UIView animateWithDuration:.5 animations:^{
+                [_superlativeView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - playersDict.count * SIZE_OF_BLURRED_PLAYER_VIEW)];
+            }];
+        }];
     }];
 }
 
@@ -188,24 +202,25 @@
     }
 }
 
--(void)displaySelectedPlayersToBeginJudging
+-(IBAction)beginJudgingButtonTapped:(UITapGestureRecognizer *)sender
 {
+    [sender setEnabled:NO];
+    
     SuperlativeCardView *scv = [self.views firstObject];
     CGFloat newHeight = 64;
     
-    
-    self.judgeChoosingWinnerPhotoScrollView = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:CGRectMake(0, scv.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - scv.frame.size.height) choices:self.choices withDesiredEndingBackgroundColor:scv.backgroundColor];
-    [self.judgeChoosingWinnerPhotoScrollView setAlpha:0];
+    self.judgeChoosingWinnerPhotoScrollView = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - newHeight) choices:self.choices withDesiredEndingBackgroundColor:scv.backgroundColor];
     [self.view addSubview:self.judgeChoosingWinnerPhotoScrollView];
-    [UIView animateWithDuration:1 animations:^{
-        [self.judgeChoosingWinnerPhotoScrollView setAlpha:1];
-        for (UIView *v in self.view.subviews) {
-            if (v != scv && v != self.judgeChoosingWinnerPhotoScrollView) {
-                [v setAlpha:0.];
-            }
-        }
+    
+    CGFloat initialOffset = SIZE_OF_BLURRED_PLAYER_VIEW * [TableTalkUtil instance].players.count;
+    CGFloat secondOffset = self.view.frame.size.height - newHeight - initialOffset;
+    CGFloat initialAnimationNumSeconds = initialOffset / (initialOffset + secondOffset) * .5;
+    CGFloat secondAnimationNumSeconds = secondOffset / (initialOffset + secondOffset) * .5;
+    [UIView animateWithDuration:initialAnimationNumSeconds animations:^{
+        [scv hideRoundAndNumFinishedLabels];
+        [self.judgeChoosingWinnerPhotoScrollView setFrame:CGRectOffset(self.judgeChoosingWinnerPhotoScrollView.frame, 0, -1.0 * SIZE_OF_BLURRED_PLAYER_VIEW * [TableTalkUtil instance].players.count)];
     } completion:^(BOOL finished) {
-        [UIView animateWithDuration:.5 animations:^{
+        [UIView animateWithDuration:secondAnimationNumSeconds animations:^{
             [scv setFrame:CGRectMake(0, 0, self.view.frame.size.width, newHeight)];
             [self.judgeChoosingWinnerPhotoScrollView setFrame:CGRectMake(0, newHeight, self.view.frame.size.width, self.view.frame.size.height - newHeight)];
         }];
@@ -215,6 +230,40 @@
             }
         }
     }];
+}
+
+-(void)displaySelectedPlayersToBeginJudging
+{
+    
+    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size, NO, [UIScreen mainScreen].scale);
+    [self.view drawViewHierarchyInRect:self.view.bounds afterScreenUpdates:YES];
+    
+    UIImage *snapshotImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIImage *superlativesSnapShotImage = [snapshotImage cropFromRect:CGRectMake(0, self.view.frame.size.height - [TableTalkUtil instance].players.count * SIZE_OF_BLURRED_PLAYER_VIEW, self.view.frame.size.height, [TableTalkUtil instance].players.count *SIZE_OF_BLURRED_PLAYER_VIEW)];
+    UIImage *blurredImage = [superlativesSnapShotImage applyLightEffect];
+    
+    UIImageView *view = [[UIImageView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - blurredImage.size.height, self.view.frame.size.width, blurredImage.size.height)];
+    [view setImage:blurredImage];
+    [view setAlpha:0];
+    [self.view addSubview:view];
+    
+    UILabel *viewLabel = [[UILabel alloc] initWithFrame:view.bounds];
+    [viewLabel setText:@"Tap to begin judging"];
+    [viewLabel setTextAlignment:NSTextAlignmentCenter];
+    [viewLabel setTextColor:[UIColor whiteColor]];
+    [viewLabel setFont:[UIFont fontWithName:@"Futura-Medium" size:20]];
+    [view addSubview:viewLabel];
+    
+    [UIView animateWithDuration:.5 animations:^{
+        [view setAlpha:1];
+    }];
+    
+    for (UIGestureRecognizer *rec in self.view.gestureRecognizers) {
+        [self.view removeGestureRecognizer:rec];
+    }
+    
+    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(beginJudgingButtonTapped:)];
+    [self.view addGestureRecognizer:recognizer];
 }
 
 - (void)didReceiveMemoryWarning
@@ -230,11 +279,16 @@
     if ([[json objectForKey:@"name"] isEqualToString:@"startJudging"]) {
         NSArray *fbIDs = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
     } else if ([[json objectForKey:@"name"] isEqualToString:@"playerFinished"]) {
+        static NSInteger numFinished = 0;
+        numFinished ++;
         NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
         NSString *selectedFbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
         Choice *choice = [[Choice alloc] initWithFbId:selectedFbId chosenByFbId:fbId];
         choice.delegate = self;
         [self.choices addObject:choice];
+        
+        SuperlativeCardView *scv = [self.views firstObject];
+        [scv setNumFinishedLabelTextWithNumFinished:numFinished];
         
         BlurredWaitingForPlayersToFinishView *v;
         for (BlurredWaitingForPlayersToFinishView *view in self.playerViews) {

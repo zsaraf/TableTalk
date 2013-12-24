@@ -107,12 +107,13 @@
         Choice *winningChoice = [self.choices objectAtIndex:cardTapped];
         Player *player = [[TableTalkUtil instance].players objectForKey:winningChoice.chosenByFbId];
         player.score ++;
+        [TableTalkUtil instance].numRoundsPlayed ++;
         
         CGFloat newSquareWidth = self.frame.size.width - 2 *padding;
         
         // SCORES label
         UILabel *scoresLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, offsetY + newSquareWidth + padding, self.frame.size.width, 44)];
-        [scoresLabel setFont:[UIFont fontWithName:@"Futura-Medium" size:24]];
+        [scoresLabel setFont:[UIFont fontWithName:@"Futura-Medium" size:22]];
         [scoresLabel setTextColor:[UIColor whiteColor]];
         [scoresLabel setText:@"SCORE"];
         [scoresLabel setTextAlignment:NSTextAlignmentCenter];
@@ -153,6 +154,7 @@
         
     }];
 }
+
 
 -(void)layoutSubviews
 {

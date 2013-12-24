@@ -206,7 +206,7 @@
     [self runSpinAnimationOnView:self.goButton duration:10 rotations:1 repeat:1];
     // create label
     UIFont *font = [UIFont fontWithName:@"Futura-Medium" size:25];
-    NSString *labelString = @"Finding game...";
+    NSString *labelString = @"Syncing with friends...";
     CGSize size = [labelString sizeWithAttributes:@{NSFontAttributeName:font}];
     CGFloat padding = 15.;
     self.labelView = [[UILabel alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, size.height)];
@@ -394,13 +394,26 @@
     }
 }
 
+-(void)fadeInGamePhotoScrollViewController
+{
+    GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCards:self.friends superlative:self.superlative];
+    
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = .3;
+    transition.type = kCATransitionFade;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
+    
+    [self.navigationController pushViewController:vc animated:NO];
+}
+
 -(void)cardDidFinishDownloadingImageAndName:(Card *)card
 {
     self.numCardDataRetrieved ++;
     
     if (self.numCardDataRetrieved == self.friends.count && self.isReadyToDisplayFriendCards) {
-        GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCards:self.friends superlative:self.superlative];
-        [self.navigationController pushViewController:vc animated:YES];
+        [self fadeInGamePhotoScrollViewController];
     }
 }
 
@@ -478,6 +491,14 @@
     } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"initialPlayers"]) {
         NSArray *players = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"otherPlayers"];
         self.superlatives = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlatives"];
+        //ZWS-TODO remove next line overriding superlatives
+        if (self.superlatives) {
+            self.superlatives = [NSArray arrayWithObjects:@"Would have sex in a portapotty",
+                                 @"Most likely to enjoy watching a bar fight",
+                                 @"Could be mistaken for serial killer ",
+                                 @"Would exchange parents' lives for Pokemon to be real",
+                                 nil];
+        }
         for (NSString *fbId in players) {
             [self addPlayerToDictionary:fbId];
         }
@@ -501,12 +522,10 @@
         }
     } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"startRound"]) {
         NSString *superlative = [[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0];
-        
+        self.superlative = superlative;
         if (self.numCardDataRetrieved == self.friends.count) {
-            GamePhotoScrollViewController *vc = [[GamePhotoScrollViewController alloc] initWithCards:self.friends superlative:superlative];
-            [self.navigationController pushViewController:vc animated:YES];
+            [self fadeInGamePhotoScrollViewController];
         } else {
-            self.superlative = superlative;
             self.isReadyToDisplayFriendCards = YES;
         }
     }

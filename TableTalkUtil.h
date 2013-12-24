@@ -20,5 +20,6 @@
 
 @property (nonatomic, strong) NSMutableDictionary *players;
 @property (nonatomic, strong) Player *me;
+@property (nonatomic) NSInteger numRoundsPlayed;
 
 @end

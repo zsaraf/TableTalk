@@ -25,6 +25,7 @@
         self.delegate = delegate;
         self.groupId = groupId;
         [self.socketIO connectToHost:@"54.213.192.50" onPort:80];
+        //[self.socketIO connectToHost:@"54.209.180.200" onPort:80];
     }
     return self;
 }
