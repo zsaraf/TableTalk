@@ -14,6 +14,7 @@
 
 -(id)initWithFrame:(CGRect)frame card:(Card *)card andIndex:(NSInteger)index isLast:(BOOL)isLast;
 
+@property (nonatomic, strong) UIImageView *imgView;
 @property (nonatomic, assign) NSInteger index;
 @property (nonatomic, strong) UIImageView *blurredImageView;
 @property (nonatomic, strong) UIView *blurredImageViewWrapper;

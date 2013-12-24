@@ -516,7 +516,7 @@
             for (NSString *fbId in self.friendIds) {
                 Card *card = [[Card alloc] initWithFbId:fbId];
                 card.delegate = self;
-                [self.friends addObject:card]; 
+                [self.friends addObject:card];
             }
             
         }

@@ -12,6 +12,7 @@
 #import "WinnerViewController.h"
 #import "UIImageView+WebCache.h"
 #import "FriendCardView.h"
+#import "SuperlativeCardView.h"
 
 @interface GamePhotoScrollViewController ()
 
@@ -24,12 +25,13 @@
 @property (nonatomic, assign) CGFloat firstY;
 @property (nonatomic, assign) CGFloat currentY;
 @property (nonatomic, strong) UIView *contentView;
-@property (nonatomic, strong) UIToolbar *toolbar;
+@property (nonatomic, strong) UIView *toolbar;
 @property (nonatomic, weak) FriendCardView *current;
 @property (nonatomic, assign) CGFloat screenWidth;
 @property (nonatomic, strong) NSString *superlative;
 
 @property (nonatomic, strong) NSArray *cards;
+@property (nonatomic, strong) UIImageView *selectedImageView;
 
 @end
 
@@ -118,6 +120,13 @@
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(screenTapped:)];
     [self.contentView addGestureRecognizer:tapRecognizer];
     [recognizer requireGestureRecognizerToFail:tapRecognizer];
+    
+    UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(photoDoubleTapped:)];
+    [doubleTapRecognizer setNumberOfTapsRequired:2];
+    [self.view addGestureRecognizer:doubleTapRecognizer];
+    //[recognizer requireGestureRecognizerToFail:doubleTapRecognizer];
+    [tapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];
+
 }
 
 -(IBAction)screenTapped:(UITapGestureRecognizer *)sender
@@ -126,14 +135,6 @@
     UIView *v = [self.contentView hitTest:[sender locationInView:self.contentView] withEvent:nil];
     while (![v isKindOfClass:[FriendCardView class]]) v = v.superview;
     FriendCardView *fv = (FriendCardView *)v;
-    
-    if (fv.index == self.currentPage) {
-        WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
-        [TableTalkUtil appDelegate].socket.delegate = vc;
-        [self.navigationController pushViewController:vc animated:YES];
-        [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:fv.card.fbId];
-        return;
-    }
     
     [UIView animateWithDuration:.3 animations:^{
     
@@ -239,32 +240,16 @@
 {
     [super viewWillAppear:animated];
     
+    UIColor *bckgdColor = [UIColor colorWithRed:39/255. green:144/255. blue:210/255. alpha:1.];
     // beginning of toolbar code
-    self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64)];
-    [self.toolbar setBarTintColor:[UIColor colorWithRed:39/255. green:144/255. blue:210/255. alpha:1.]]; //rgba(44, 62, 80,1.0)
-    [self.toolbar setTranslucent:NO];
-    UIFont *myFont = [UIFont fontWithName:@"Futura-Medium" size:25];
-    CGSize size = [self.superlative sizeWithAttributes:@{NSFontAttributeName:myFont}];
-    CGFloat verticalPadding = (self.toolbar.frame.size.height - size.height)/2;
-    UILabel *superlativeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, verticalPadding, self.toolbar.frame.size.width, self.toolbar.frame.size.height - 2 * verticalPadding)];
-    [superlativeLabel setText:self.superlative];
-    [superlativeLabel setFont:myFont];
-    [superlativeLabel setTextAlignment:NSTextAlignmentCenter];
-    [superlativeLabel setTextColor:[UIColor whiteColor]];
-    
-    UIView *labelBckgdView = [[UIView alloc] initWithFrame:CGRectMake(0, 10, self.view.bounds.size.width, self.toolbar.frame.size.height - 10)];
-    [labelBckgdView addSubview:superlativeLabel];
-    UIBarButtonItem *superlative = [[UIBarButtonItem alloc] initWithCustomView:labelBckgdView];
-    self.toolbar.items = [NSArray arrayWithObjects:
-                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                          superlative,
-                          [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                          nil];
+    self.toolbar = [[SuperlativeCardView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64) superlative:self.superlative index:0];
+    [self.toolbar setBackgroundColor:bckgdColor];
     [self.view addSubview:self.toolbar];
     // end of toolbar code
     
     // beginning of content code
     [self.contentView setFrame:CGRectMake(0, self.toolbar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.toolbar.frame.size.height)];
+    [self.contentView setBackgroundColor:bckgdColor];
     [self.view addSubview:self.contentView];
     CGFloat nameHeight = (self.contentView.frame.size.height - self.screenWidth)/(self.cards.count - 1);
     for (int i = 0; i < self.cards.count; i++) {
@@ -290,10 +275,6 @@
     [v setBlurredImageViewAlpha:0.];
     
     [self.view bringSubviewToFront:self.toolbar];
-    
-    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(photoDoubleTapped:)];
-    [recognizer setNumberOfTapsRequired:2];
-    [self.view addGestureRecognizer:recognizer];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -306,12 +287,40 @@
 -(IBAction)photoDoubleTapped:(UITapGestureRecognizer *)sender
 {
     NSLog(@"photo doubel tapped");
-    /*NSInteger friendIndex = self.photoScrollView.contentOffset.x/self.photoScrollView.frame.size.width;
-        WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
-        [TableTalkUtil appDelegate].socket.delegate = vc;
-        [self.navigationController pushViewController:vc animated:YES];
-        [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:[self.card_fbIDs objectAtIndex:friendIndex]];
-    }*/
+    UIView *v = [self.contentView hitTest:[sender locationInView:self.contentView] withEvent:nil];
+    while (![v isKindOfClass:[FriendCardView class]]) v = v.superview;
+    FriendCardView *fv = (FriendCardView *)v;
+    
+    if (fv.index == self.currentPage) {
+        for (UIGestureRecognizer *recognizer in self.view.gestureRecognizers) {
+            [self.view removeGestureRecognizer:recognizer];
+        }
+//        WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
+//        [TableTalkUtil appDelegate].socket.delegate = vc;
+//        [self.navigationController pushViewController:vc animated:YES];
+        // set up image view for animation
+        self.selectedImageView = [[UIImageView alloc] initWithFrame:fv.frame];
+        [self.selectedImageView setAlpha:0];
+        [self.selectedImageView setImage:fv.card.image];
+        [self.contentView addSubview:self.selectedImageView];
+        
+        [UIView animateWithDuration:.5 animations:^{
+            for (NSInteger i = 0; i < self.scrollViewArray.count; i++) {
+                if (i != self.currentPage) {
+                    FriendCardView *v =  [self.scrollViewArray objectAtIndex:i];
+                    [v setFrame:CGRectOffset(v.frame, self.view.frame.size.width, 0)];
+                }
+            }
+            [self.selectedImageView setAlpha:1];
+        } completion:^(BOOL finished) {
+            [fv removeFromSuperview];
+        }];
+        
+        [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:fv.card.fbId];
+        return;
+    } else {
+        [self screenTapped:sender];
+    }
 }
 
 -(void)socketDidReceiveEvent:(SocketIOPacket *)packet

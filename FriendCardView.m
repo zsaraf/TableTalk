@@ -16,7 +16,6 @@
 
 @property (nonatomic, strong) NSURLConnection *linkConnection;
 @property (nonatomic, strong) NSMutableData *data;
-@property (nonatomic, strong) UIImageView *imgView;
 @property (nonatomic, assign) BOOL isLast;
 @property (nonatomic, strong) UIView *transparentNameView;
 @property (nonatomic, strong) UILabel *nameLabel;
