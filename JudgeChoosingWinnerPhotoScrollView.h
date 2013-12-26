@@ -11,7 +11,9 @@
 @interface JudgeChoosingWinnerPhotoScrollView : UIScrollView <UIScrollViewDelegate>
 
 -(id)initWithFrame:(CGRect)frame
-           choices:(NSArray *)choices withDesiredEndingBackgroundColor:(UIColor *)desiredEndingBackgroundColor;
+           choices:(NSArray *)choices withDesiredEndingBackgroundColor:(UIColor *)desiredEndingBackgroundColor isJudge:(BOOL)isJudge;
+-(void)scrollToFacebookId:(NSString *)fbId;
+-(void)displayWinnerWithCardTapped:(NSInteger)cardTapped;
 
 @property (nonatomic, strong) NSArray *choices;
 

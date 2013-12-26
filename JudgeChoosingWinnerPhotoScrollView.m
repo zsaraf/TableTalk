@@ -19,6 +19,9 @@
 @property (nonatomic, strong) NSMutableArray *labelBackgroundViews;
 @property (nonatomic, assign) NSInteger currentPage;
 @property (nonatomic, strong) UIColor *desiredEndingBackgroundColor;
+@property (nonatomic) BOOL isJudge;
+
+@property (nonatomic) NSInteger lastSentPage;
 
 
 @property (nonatomic) BOOL hasPickedWinner;
@@ -28,9 +31,11 @@
 @implementation JudgeChoosingWinnerPhotoScrollView
 
 -(id)initWithFrame:(CGRect)frame
-           choices:(NSArray *)choices withDesiredEndingBackgroundColor:(UIColor *)desiredEndingBackgroundColor;
+           choices:(NSArray *)choices withDesiredEndingBackgroundColor:(UIColor *)desiredEndingBackgroundColor isJudge:(BOOL)isJudge;
 {
     if (self = [super initWithFrame:frame]) {
+        self.lastSentPage = -1;
+        self.isJudge = isJudge;
         self.choices = choices;
         self.imageViews = [[NSMutableArray alloc] init];
         self.labels = [[NSMutableArray alloc] init];
@@ -69,20 +74,27 @@
         for (UILabel *label in self.labels) {
             [self bringSubviewToFront:label];
         }
+        
+        if (self.isJudge) {
+            [self scrollViewDidEndDecelerating:self];
+        }
     }
     return self;
 }
 
--(IBAction)viewDoubleTapped:(UITapGestureRecognizer *)sender
+-(void)scrollToFacebookId:(NSString *)fbId
 {
-    self.hasPickedWinner = YES;
-    
-    CGPoint location = [sender locationInView:self];
-    NSInteger cardTapped = location.y / (SIZE_OF_LABEL + self.frame.size.width);
-    NSLog(@"card tapped %ld", (long)cardTapped);
-    NSLog(@"niiice");
+    for (int i = 0; i < self.choices.count; i++) {
+        Choice *choice = [self.choices objectAtIndex:i];
+        if ([choice.fbId isEqualToString:fbId]) {
+            [self setContentOffset:CGPointMake(0, (self.frame.size.width + SIZE_OF_LABEL) * i)];
+        }
+    }
+}
+
+-(void)displayWinnerWithCardTapped:(NSInteger)cardTapped
+{
     [self setScrollEnabled:NO];
-    [sender setEnabled:NO];
     
     self.backgroundColor = self.desiredEndingBackgroundColor;
     
@@ -103,9 +115,14 @@
         UIImageView *winnerImgView = [self.imageViews objectAtIndex:cardTapped];
         CGFloat offsetY = self.contentOffset.y;
         CGFloat padding = 44;
- 
+        
         Choice *winningChoice = [self.choices objectAtIndex:cardTapped];
-        Player *player = [[TableTalkUtil instance].players objectForKey:winningChoice.chosenByFbId];
+        Player *player;
+        if ([[TableTalkUtil instance].me.fbId isEqualToString:winningChoice.chosenByFbId]) {
+            player = [TableTalkUtil instance].me;
+        } else {
+            player = [[TableTalkUtil instance].players objectForKey:winningChoice.chosenByFbId];
+        }
         player.score ++;
         [TableTalkUtil instance].numRoundsPlayed ++;
         
@@ -120,10 +137,10 @@
         [scoresLabel setAlpha:0];
         
         /*CALayer *borderLayer = [CALayer layer];
-        CGFloat scoresBorderPadding = 5;
-        [borderLayer setFrame:CGRectMake(scoresBorderPadding, scoresLabel.layer.frame.size.height - 2, scoresLabel.layer.frame.size.width - 2 * scoresBorderPadding, 2)];
-        [borderLayer setBackgroundColor:[[UIColor whiteColor] CGColor]];
-        [scoresLabel.layer addSublayer:borderLayer];*/
+         CGFloat scoresBorderPadding = 5;
+         [borderLayer setFrame:CGRectMake(scoresBorderPadding, scoresLabel.layer.frame.size.height - 2, scoresLabel.layer.frame.size.width - 2 * scoresBorderPadding, 2)];
+         [borderLayer setBackgroundColor:[[UIColor whiteColor] CGColor]];
+         [scoresLabel.layer addSublayer:borderLayer];*/
         
         [self addSubview:scoresLabel];
         
@@ -155,12 +172,26 @@
     }];
 }
 
+-(IBAction)viewDoubleTapped:(UITapGestureRecognizer *)sender
+{
+    self.hasPickedWinner = YES;
+    [sender setEnabled:NO];
+    CGPoint location = [sender locationInView:self];
+    NSInteger cardTapped = location.y / (SIZE_OF_LABEL + self.frame.size.width);
+    NSLog(@"card tapped %ld", (long)cardTapped);
+    NSLog(@"niiice");
+    if (self.isJudge) {
+        [[TableTalkUtil appDelegate].socket sendChoseWinnerMessage:[self.choices objectAtIndex:cardTapped]];
+    }
+    [self displayWinnerWithCardTapped:cardTapped];
+}
+
 
 -(void)layoutSubviews
 {
     [super layoutSubviews];
     
-    if (self.hasPickedWinner) return;
+    if (self.hasPickedWinner || self.labels.count == 0) return;
     
     CGFloat contentOffsetY = self.contentOffset.y;
     NSInteger currentPage = floor(contentOffsetY/(self.frame.size.width + SIZE_OF_LABEL));
@@ -193,29 +224,48 @@
     [label setCenter:CGPointMake(self.frame.size.width/2, contentOffsetY + SIZE_OF_LABEL/2)];
 }
 
+-(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    CGFloat contentOffsetY = self.contentOffset.y;
+    NSInteger currentPage = floor(contentOffsetY/(self.frame.size.width + SIZE_OF_LABEL));
+    
+    if (currentPage < 0) {
+        return;
+    }
+    
+    CGFloat mod = fmodf(contentOffsetY, (self.frame.size.width + SIZE_OF_LABEL));
+    
+    NSInteger sendPage = (mod < (self.frame.size.width + SIZE_OF_LABEL)/2) ? currentPage : currentPage + 1;
+    
+    if (sendPage != self.lastSentPage) {
+        self.lastSentPage = sendPage;
+        [[TableTalkUtil appDelegate].socket sendJudgeCurrentlyLookingAtFbId:((Choice *)[self.choices objectAtIndex:sendPage]).fbId];
+    }
+}
+
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
     /*CGFloat contentOffsetY = MIN(MAX(0, scrollView.contentOffset.y), (self.frame.size.width + SIZE_OF_LABEL) * self.choices.count);
-    NSInteger currentPage = floor(contentOffsetY/(self.frame.size.width + SIZE_OF_LABEL));
-    CGFloat mod = fmodf(contentOffsetY, (self.frame.size.width + SIZE_OF_LABEL));
-    if (self.frame.size.width + SIZE_OF_LABEL - mod < SIZE_OF_LABEL) {
-        
-    } else if (currentPage != self.currentPage && currentPage != 0) {
-        self.currentPage = currentPage;
-        UILabel *aboveLabel = [self.labels objectAtIndex:currentPage - 1];
-        [aboveLabel setCenter:CGPointMake(self.frame.size.width/2, (self.frame.size.width + SIZE_OF_LABEL) * currentPage - SIZE_OF_LABEL/2)];
-    }
-    UILabel *label = [self.labels objectAtIndex:currentPage];
-    [label setCenter:CGPointMake(self.frame.size.width/2, scrollView.contentOffset.y + SIZE_OF_LABEL/2)];*/
+     NSInteger currentPage = floor(contentOffsetY/(self.frame.size.width + SIZE_OF_LABEL));
+     CGFloat mod = fmodf(contentOffsetY, (self.frame.size.width + SIZE_OF_LABEL));
+     if (self.frame.size.width + SIZE_OF_LABEL - mod < SIZE_OF_LABEL) {
+     
+     } else if (currentPage != self.currentPage && currentPage != 0) {
+     self.currentPage = currentPage;
+     UILabel *aboveLabel = [self.labels objectAtIndex:currentPage - 1];
+     [aboveLabel setCenter:CGPointMake(self.frame.size.width/2, (self.frame.size.width + SIZE_OF_LABEL) * currentPage - SIZE_OF_LABEL/2)];
+     }
+     UILabel *label = [self.labels objectAtIndex:currentPage];
+     [label setCenter:CGPointMake(self.frame.size.width/2, scrollView.contentOffset.y + SIZE_OF_LABEL/2)];*/
 }
 
 /*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
-}
-*/
+ // Only override drawRect: if you perform custom drawing.
+ // An empty implementation adversely affects performance during animation.
+ - (void)drawRect:(CGRect)rect
+ {
+ // Drawing code
+ }
+ */
 
 @end

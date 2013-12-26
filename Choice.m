@@ -12,6 +12,7 @@
 #import <AFNetworking.h>
 
 @implementation Choice
+@synthesize delegate = _delegate;
 
 -(id)initWithFbId:(NSString *)fbId chosenByFbId:(NSString *)chosenByFbId
 {
@@ -51,6 +52,25 @@
         
     }
     return self;
+}
+
+-(id)initWithFbId:(NSString *)fbId chosenByFbId:(NSString *)chosenByFbId image:(UIImage *)image name:(NSString *)name
+{
+    if (self = [super init]) {
+        self.fbId = fbId;
+        self.chosenByFbId = chosenByFbId;
+        self.image = image;
+        self.name = name;
+    }
+    return self;
+}
+
+-(void)setDelegate:(id<ChoiceDelegate>)delegate
+{
+    _delegate = delegate;
+    if (delegate && self.image && self.name) {
+        [_delegate didFinishDownloadingImageAndNameForChoice:self];
+    }
 }
 
 @end

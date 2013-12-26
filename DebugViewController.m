@@ -48,7 +48,7 @@
         choice.name = array[i];
         [choices addObject:choice];
     }
-    JudgeChoosingWinnerPhotoScrollView *v = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:self.view.bounds choices:choices withDesiredEndingBackgroundColor:[UIColor colorWithRed:16/255. green:132/255. blue:205/255. alpha:1.]];
+    JudgeChoosingWinnerPhotoScrollView *v = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:self.view.bounds choices:choices withDesiredEndingBackgroundColor:[UIColor colorWithRed:16/255. green:132/255. blue:205/255. alpha:1.] isJudge:YES];
     [self.view addSubview:v];
 }
 

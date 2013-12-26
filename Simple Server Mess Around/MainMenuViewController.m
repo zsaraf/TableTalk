@@ -462,6 +462,7 @@
             [imgView setAlpha:0];
         }
         [self.goButton setAlpha:0];
+        [self.labelView setAlpha:0];
     } completion:^(BOOL finished) {
         [self.labelView.layer removeAllAnimations];
         [UIView animateWithDuration:.5 animations:^{
@@ -471,6 +472,7 @@
                 [self.labelView setText:@"You are the first judge. Tap anywhere to begin picking your superlative."];
             }
             [self.labelView setCenter:CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2)];
+            [self.labelView setAlpha:1];
         } completion:^(BOOL finished) {
             if (self.superlatives) {
                 UITapGestureRecognizer *judgeTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(judgeTappedOnScreen:)];

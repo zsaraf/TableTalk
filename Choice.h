@@ -20,6 +20,7 @@
 
 
 -(id)initWithFbId:(NSString *)fbId chosenByFbId:(NSString *)chosenByFbId;
+-(id)initWithFbId:(NSString *)fbId chosenByFbId:(NSString *)chosenByFbId image:(UIImage *)image name:(NSString *)name;
 
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) NSString *name;

@@ -13,6 +13,7 @@
 #import "UIImageView+WebCache.h"
 #import "FriendCardView.h"
 #import "SuperlativeCardView.h"
+#import "JudgeChoosingWinnerPhotoScrollView.h"
 
 @interface GamePhotoScrollViewController ()
 
@@ -43,9 +44,14 @@
 @property (nonatomic) NSInteger numFinished;
 @property (nonatomic) NSInteger numChoicesDownloaded;
 
+@property (nonatomic, strong) NSString *currentlyViewing;
+@property (nonatomic, strong) JudgeChoosingWinnerPhotoScrollView *judgeChoosingWinnerPhotoScrollView;
+
 @end
 
 @implementation GamePhotoScrollViewController
+
+@synthesize currentlyViewing = _currentlyViewing;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -64,6 +70,7 @@
         self.superlative = superlative;
         self.contentView = [[UIView alloc] init];
         self.cards = cards;
+        self.choices = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -136,7 +143,7 @@
     [self.view addGestureRecognizer:doubleTapRecognizer];
     //[recognizer requireGestureRecognizerToFail:doubleTapRecognizer];
     [tapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];
-
+    
 }
 
 -(IBAction)screenTapped:(UITapGestureRecognizer *)sender
@@ -147,7 +154,7 @@
     FriendCardView *fv = (FriendCardView *)v;
     
     [UIView animateWithDuration:.3 animations:^{
-    
+        
         if (fv.index < self.currentPage) {
             for (int i = fv.index; i <= self.currentPage; i++) {
                 FriendCardView *v = [self.scrollViewArray objectAtIndex:i];
@@ -302,15 +309,20 @@
     FriendCardView *fv = (FriendCardView *)v;
     
     if (fv.index == self.currentPage) {
+        Choice *myChoice = [[Choice alloc] initWithFbId:fv.card.fbId chosenByFbId:[TableTalkUtil instance].me.fbId image:fv.card.image name:fv.card.name];
+        [self.choices addObject:myChoice];
+        [myChoice setDelegate:self];
+        
         [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:fv.card.fbId];
+        
         for (UIGestureRecognizer *recognizer in self.view.gestureRecognizers) {
             [self.view removeGestureRecognizer:recognizer];
         }
         
         
-//        WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
-//        [TableTalkUtil appDelegate].socket.delegate = vc;
-//        [self.navigationController pushViewController:vc animated:YES];
+        //        WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
+        //        [TableTalkUtil appDelegate].socket.delegate = vc;
+        //        [self.navigationController pushViewController:vc animated:YES];
         
         
         // set up image view for animation
@@ -346,9 +358,9 @@
             [self.contentViewNumFinishedLabel setAlpha:0];
             [self.contentView addSubview:self.contentViewNumFinishedLabel];
             
-//            self.contentViewStatusLabel = [TableTalkUtil tableTalkLabelWithFrame:CGRectMake(0, self.contentViewNumFinishedLabel.frame.origin.y - 64, self.contentView.frame.size.width, 64) fontSize:20 text:@"Waiting for all players to finish"];
-//            [self.contentViewStatusLabel setAlpha:0];
-//            [self.contentView addSubview:self.contentViewStatusLabel];
+            //            self.contentViewStatusLabel = [TableTalkUtil tableTalkLabelWithFrame:CGRectMake(0, self.contentViewNumFinishedLabel.frame.origin.y - 64, self.contentView.frame.size.width, 64) fontSize:20 text:@"Waiting for all players to finish"];
+            //            [self.contentViewStatusLabel setAlpha:0];
+            //            [self.contentView addSubview:self.contentViewStatusLabel];
             
             
             [UIView animateWithDuration:.5 animations:^{
@@ -372,22 +384,92 @@
     // ZWS-TODO receive startJudging, and go to waitforjudge
     id json = packet.dataAsJSON;
     if ([[json objectForKey:@"name"] isEqualToString:@"roundFinished"]) {
-    
+        NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"winner"];
+        NSInteger index;
+        for (int i = 0; i < self.choices.count; i++) {
+            Choice *choice = [self.choices objectAtIndex:i];
+            if ([choice.fbId isEqualToString:fbId]) {
+                index = i;
+            }
+        }
+        [self.view bringSubviewToFront:self.judgeChoosingWinnerPhotoScrollView];
+        [UIView animateWithDuration:.5 animations:^{
+            [self.judgeChoosingWinnerPhotoScrollView setFrame:CGRectMake(0, self.toolbar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.toolbar.frame.size.height)];
+        } completion:^(BOOL finished) {
+            [self.judgeChoosingWinnerPhotoScrollView displayWinnerWithCardTapped:index];
+        }];
     } else if ([[json objectForKey:@"name"] isEqualToString:@"playerFinished"]) {
-        self.numFinished ++;
         NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
         NSString *selectedFbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
         Choice *choice = [[Choice alloc] initWithFbId:selectedFbId chosenByFbId:fbId];
         choice.delegate = self;
         [self.choices addObject:choice];
         
-        [self.contentViewNumFinishedLabel setText:[NSString stringWithFormat:@"%d/%d players have chosen", self.numFinished,[TableTalkUtil instance].players.count]];
+        if (self.choices.count == 1) self.currentlyViewing = fbId;
+        
+        [self.contentViewNumFinishedLabel setText:[NSString stringWithFormat:@"%d/%d players have chosen", self.choices.count,[TableTalkUtil instance].players.count]];
+    } else if ([[json objectForKey:@"name"] isEqualToString:@"currentlyViewing"]) {
+        NSLog(@"is currently viewing %@", [[json objectForKey:@"args"] objectAtIndex:0]);
+        // currentlyViewing nonsense?
     }
+}
+
+-(void)displayJudgeSyncScreenPart2
+{
+    CGFloat newBottomHeight = 64;
+    self.judgeChoosingWinnerPhotoScrollView = [[JudgeChoosingWinnerPhotoScrollView alloc] initWithFrame:CGRectMake(0, self.toolbar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.toolbar.frame.size.height - newBottomHeight) choices:self.choices withDesiredEndingBackgroundColor:self.toolbar.backgroundColor isJudge:NO];
+    [self.judgeChoosingWinnerPhotoScrollView setUserInteractionEnabled:NO];
+    [self.judgeChoosingWinnerPhotoScrollView scrollToFacebookId:self.currentlyViewing];
+    [self.view insertSubview:self.judgeChoosingWinnerPhotoScrollView belowSubview:self.contentView];
+    [UIView animateWithDuration:.5 animations:^{
+        [self.contentViewNumFinishedLabel setAlpha:0];
+        [self.contentView setFrame:CGRectMake(0, self.view.frame.size.height - newBottomHeight, self.view.frame.size.width, newBottomHeight)];
+    } completion:^(BOOL finished) {
+        [self.contentViewNumFinishedLabel setFrame:self.contentView.bounds];
+        [self.contentViewNumFinishedLabel setText:@"Judge is viewing..."];
+        [UIView animateWithDuration:.5 animations:^{
+            [self.contentViewNumFinishedLabel setAlpha:1];
+        }];
+    }];
+}
+
+-(void)displayJudgeSyncScreen
+{
+    [self.view bringSubviewToFront:self.contentView];
+    [UIView animateWithDuration:.5 animations:^{
+        [self.contentView setFrame:self.view.bounds];
+        [self.contentViewNameLabel setAlpha:0];
+        [self.selectedImageView setAlpha:0];
+        [self.contentViewStatusLabel setAlpha:0];
+        [self.contentViewNumFinishedLabel setAlpha:0];
+    } completion:^(BOOL finished) {
+        [self.contentViewNumFinishedLabel setFrame:self.contentView.bounds];
+        [self.contentViewNumFinishedLabel setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+        [self.contentViewNumFinishedLabel setText:@"Judge beginning to choose winner."];
+        [UIView animateWithDuration:.5 animations:^{
+            [self.contentViewNumFinishedLabel setAlpha:1];
+        } completion:^(BOOL finished) {
+            [self performSelector:@selector(displayJudgeSyncScreenPart2) withObject:nil afterDelay:1];
+        }];
+    }];
+}
+
+-(void)setCurrentlyViewing:(NSString *)currentlyViewing
+{
+    _currentlyViewing = currentlyViewing;
+    [UIView animateWithDuration:.5 animations:^{
+        [self.judgeChoosingWinnerPhotoScrollView scrollToFacebookId:currentlyViewing];
+    }];
 }
 
 -(void)didFinishDownloadingImageAndNameForChoice:(Choice *)choice
 {
     self.numChoicesDownloaded ++;
+    
+    if (self.numChoicesDownloaded == [TableTalkUtil instance].players.count) {
+        //[self displayJudgeSyncScreen];
+        [self performSelector:@selector(displayJudgeSyncScreen) withObject:nil afterDelay:2];
+    }
 }
 
 - (void)didReceiveMemoryWarning
