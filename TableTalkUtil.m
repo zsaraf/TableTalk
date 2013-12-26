@@ -32,4 +32,14 @@
     return (AppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
++(UILabel *)tableTalkLabelWithFrame:(CGRect)frame fontSize:(NSInteger)fontSize text:(NSString *)text
+{
+    UILabel *label = [[UILabel alloc] initWithFrame:frame];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setFont:[UIFont fontWithName:@"Futura-Medium" size:fontSize]];
+    [label setText:text];
+    return label;
+}
+
 @end

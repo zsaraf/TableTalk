@@ -31,7 +31,17 @@
 @property (nonatomic, strong) NSString *superlative;
 
 @property (nonatomic, strong) NSArray *cards;
+@property (nonatomic, strong) NSMutableArray *choices;
 @property (nonatomic, strong) UIImageView *selectedImageView;
+
+// content view views
+@property (nonatomic, strong) UILabel *contentViewNameLabel;
+@property (nonatomic, strong) UILabel *contentViewStatusLabel;
+@property (nonatomic, strong) UILabel *contentViewNumFinishedLabel;
+
+// for the choices
+@property (nonatomic) NSInteger numFinished;
+@property (nonatomic) NSInteger numChoicesDownloaded;
 
 @end
 
@@ -242,7 +252,7 @@
     
     UIColor *bckgdColor = [UIColor colorWithRed:39/255. green:144/255. blue:210/255. alpha:1.];
     // beginning of toolbar code
-    self.toolbar = [[SuperlativeCardView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 64) superlative:self.superlative index:0];
+    self.toolbar = [[SuperlativeCardView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 84) superlative:self.superlative index:0];
     [self.toolbar setBackgroundColor:bckgdColor];
     [self.view addSubview:self.toolbar];
     // end of toolbar code
@@ -292,12 +302,17 @@
     FriendCardView *fv = (FriendCardView *)v;
     
     if (fv.index == self.currentPage) {
+        [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:fv.card.fbId];
         for (UIGestureRecognizer *recognizer in self.view.gestureRecognizers) {
             [self.view removeGestureRecognizer:recognizer];
         }
+        
+        
 //        WaitForJudgeViewController *vc = [[WaitForJudgeViewController alloc] init];
 //        [TableTalkUtil appDelegate].socket.delegate = vc;
 //        [self.navigationController pushViewController:vc animated:YES];
+        
+        
         // set up image view for animation
         self.selectedImageView = [[UIImageView alloc] initWithFrame:fv.frame];
         [self.selectedImageView setAlpha:0];
@@ -314,10 +329,38 @@
             [self.selectedImageView setAlpha:1];
         } completion:^(BOOL finished) {
             [fv removeFromSuperview];
+            
+            CGFloat newWidth = self.view.frame.size.width - 60;
+            CGPoint center = [self.contentView convertPoint:CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2) fromView:self.view];
+            CGRect newImageFrame = CGRectMake(center.x - newWidth/2 , center.y - newWidth/2, newWidth, newWidth);
+            
+            self.contentViewNameLabel = [TableTalkUtil tableTalkLabelWithFrame:CGRectMake(0, newImageFrame.origin.y + newImageFrame.size.height + 10, self.contentView.frame.size.width, 40)
+                                                                      fontSize:18
+                                                                          text:[NSString stringWithFormat:@"Your card: %@", fv.card.name]];
+            [self.contentViewNameLabel setAlpha:0];
+            [self.contentView addSubview:self.contentViewNameLabel];
+            
+            self.contentViewNumFinishedLabel = [TableTalkUtil tableTalkLabelWithFrame:CGRectMake(0, self.contentView.frame.size.height - 64, self.contentView.frame.size.width, 64)
+                                                                             fontSize:16
+                                                                                 text:[NSString stringWithFormat:@"%d/%d players have chosen", self.numFinished,[TableTalkUtil instance].players.count]];
+            [self.contentViewNumFinishedLabel setAlpha:0];
+            [self.contentView addSubview:self.contentViewNumFinishedLabel];
+            
+//            self.contentViewStatusLabel = [TableTalkUtil tableTalkLabelWithFrame:CGRectMake(0, self.contentViewNumFinishedLabel.frame.origin.y - 64, self.contentView.frame.size.width, 64) fontSize:20 text:@"Waiting for all players to finish"];
+//            [self.contentViewStatusLabel setAlpha:0];
+//            [self.contentView addSubview:self.contentViewStatusLabel];
+            
+            
+            [UIView animateWithDuration:.5 animations:^{
+                [self.selectedImageView setFrame:newImageFrame];
+            } completion:^(BOOL finished) {
+                [UIView animateWithDuration:.5 animations:^{
+                    [self.contentViewNameLabel setAlpha:1];
+                    //[self.contentViewStatusLabel setAlpha:1];
+                    [self.contentViewNumFinishedLabel setAlpha:1];
+                }];
+            }];
         }];
-        
-        [[TableTalkUtil appDelegate].socket sendChoseFriendMessage:fv.card.fbId];
-        return;
     } else {
         [self screenTapped:sender];
     }
@@ -327,11 +370,24 @@
 {
     // ZWS-TODO receive playerFinished, and keep stored
     // ZWS-TODO receive startJudging, and go to waitforjudge
-    if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"roundFinished"]) {
+    id json = packet.dataAsJSON;
+    if ([[json objectForKey:@"name"] isEqualToString:@"roundFinished"]) {
     
-    } else {
+    } else if ([[json objectForKey:@"name"] isEqualToString:@"playerFinished"]) {
+        self.numFinished ++;
+        NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
+        NSString *selectedFbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
+        Choice *choice = [[Choice alloc] initWithFbId:selectedFbId chosenByFbId:fbId];
+        choice.delegate = self;
+        [self.choices addObject:choice];
         
+        [self.contentViewNumFinishedLabel setText:[NSString stringWithFormat:@"%d/%d players have chosen", self.numFinished,[TableTalkUtil instance].players.count]];
     }
+}
+
+-(void)didFinishDownloadingImageAndNameForChoice:(Choice *)choice
+{
+    self.numChoicesDownloaded ++;
 }
 
 - (void)didReceiveMemoryWarning

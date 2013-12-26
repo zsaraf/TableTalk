@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "TableTalkUtil.h"
 #import "FriendCardView.h"
+#import "Choice.h"
 
-@interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate, NSURLConnectionDelegate>
+@interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate, NSURLConnectionDelegate, ChoiceDelegate>
 
 -(id)initWithCards:(NSArray *)cards superlative:(NSString *) superlative;
 

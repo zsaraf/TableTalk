@@ -493,7 +493,7 @@
         self.superlatives = [[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlatives"];
         //ZWS-TODO remove next line overriding superlatives
         if (self.superlatives) {
-            self.superlatives = [NSArray arrayWithObjects:@"Would have sex in a portapotty",
+            self.superlatives = [NSArray arrayWithObjects:@"Would eat in a portapotty",
                                  @"Most likely to enjoy watching a bar fight",
                                  @"Could be mistaken for serial killer ",
                                  @"Would exchange parents' lives for Pokemon to be real",

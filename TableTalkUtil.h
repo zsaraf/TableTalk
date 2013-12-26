@@ -17,6 +17,8 @@
 
 +(TableTalkUtil *)instance;
 +(AppDelegate *)appDelegate;
++(UILabel *)tableTalkLabelWithFrame:(CGRect)frame fontSize:(NSInteger)fontSize text:(NSString *)text;
+
 
 @property (nonatomic, strong) NSMutableDictionary *players;
 @property (nonatomic, strong) Player *me;

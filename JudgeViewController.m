@@ -120,6 +120,7 @@
         i ++;
     }
     [UIView animateWithDuration:.5 animations:^{
+        [self.view bringSubviewToFront:superlativeView];
         [superlativeView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
         for (UIView *view in self.views) {
             if (view != superlativeView) {
@@ -216,13 +217,15 @@
     CGFloat secondOffset = self.view.frame.size.height - newHeight - initialOffset;
     CGFloat initialAnimationNumSeconds = initialOffset / (initialOffset + secondOffset) * .5;
     CGFloat secondAnimationNumSeconds = secondOffset / (initialOffset + secondOffset) * .5;
-    [UIView animateWithDuration:initialAnimationNumSeconds animations:^{
+    [UIView animateWithDuration:initialAnimationNumSeconds delay:0. options:UIViewAnimationOptionCurveLinear animations:^{
         [scv hideRoundAndNumFinishedLabels];
         [self.judgeChoosingWinnerPhotoScrollView setFrame:CGRectOffset(self.judgeChoosingWinnerPhotoScrollView.frame, 0, -1.0 * SIZE_OF_BLURRED_PLAYER_VIEW * [TableTalkUtil instance].players.count)];
     } completion:^(BOOL finished) {
-        [UIView animateWithDuration:secondAnimationNumSeconds animations:^{
+        [UIView animateWithDuration:secondAnimationNumSeconds delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
             [scv setFrame:CGRectMake(0, 0, self.view.frame.size.width, newHeight)];
             [self.judgeChoosingWinnerPhotoScrollView setFrame:CGRectMake(0, newHeight, self.view.frame.size.width, self.view.frame.size.height - newHeight)];
+        } completion:^(BOOL finished) {
+            
         }];
         for (UIView *v in self.view.subviews) {
             if (v != scv && v != self.judgeChoosingWinnerPhotoScrollView) {
