@@ -26,6 +26,7 @@
 -(void)sendChoseWinnerMessage:(NSString *)friendId;
 -(void)sendReadyToPlayMessage;
 -(void)sendJudgeCurrentlyLookingAtFbId:(NSString *)fbId;
+-(void)sendJudgePickingNextRoundsSuperlative;
 
 @property (nonatomic, strong) NSString *groupId;
 @property (nonatomic, strong) id<SocketUtilDelegate> delegate;

@@ -181,11 +181,29 @@
     NSLog(@"card tapped %ld", (long)cardTapped);
     NSLog(@"niiice");
     if (self.isJudge) {
-        [[TableTalkUtil appDelegate].socket sendChoseWinnerMessage:[self.choices objectAtIndex:cardTapped]];
+        [[TableTalkUtil appDelegate].socket sendChoseWinnerMessage:((Choice *)[self.choices objectAtIndex:cardTapped]).fbId];
     }
     [self displayWinnerWithCardTapped:cardTapped];
 }
 
+-(void)fadeAllOut
+{
+    for (UIView *view in self.subviews) {
+        [view setAlpha:0];
+    }
+}
+
+-(void)finishAnimationWithJudgeName:(NSString *)judgeName
+{
+    [self setFrame:self.superview.bounds];
+    UILabel *label = [TableTalkUtil tableTalkLabelWithFrame:self.bounds fontSize:20 text:@"%@ is picking the next superlative"];
+    [label setAlpha:0];
+    [self addSubview:label];
+    
+    [UIView animateWithDuration:.5 animations:^{
+        [label setAlpha:1];
+    }];
+}
 
 -(void)layoutSubviews
 {
@@ -237,7 +255,7 @@
     
     NSInteger sendPage = (mod < (self.frame.size.width + SIZE_OF_LABEL)/2) ? currentPage : currentPage + 1;
     
-    if (sendPage != self.lastSentPage) {
+    if (sendPage != self.lastSentPage && self.isJudge) {
         self.lastSentPage = sendPage;
         [[TableTalkUtil appDelegate].socket sendJudgeCurrentlyLookingAtFbId:((Choice *)[self.choices objectAtIndex:sendPage]).fbId];
     }

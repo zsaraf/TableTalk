@@ -508,6 +508,7 @@
     } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"playerJoined"]) {
         [self addPlayerToDictionary:[[packet.dataAsJSON objectForKey:@"args"] objectAtIndex:0]];
     } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"judgePickingSuperlative"]) {
+        id json = packet.dataAsJSON;
         if (self.superlatives) {
             [self animateShowingJudgeIsPickingSuperlative];
         } else {

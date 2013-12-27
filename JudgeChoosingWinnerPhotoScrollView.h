@@ -14,6 +14,8 @@
            choices:(NSArray *)choices withDesiredEndingBackgroundColor:(UIColor *)desiredEndingBackgroundColor isJudge:(BOOL)isJudge;
 -(void)scrollToFacebookId:(NSString *)fbId;
 -(void)displayWinnerWithCardTapped:(NSInteger)cardTapped;
+-(void)fadeAllOut;
+-(void)finishAnimationWithJudgeName:(NSString *)judgeName;
 
 @property (nonatomic, strong) NSArray *choices;
 

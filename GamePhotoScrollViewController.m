@@ -14,6 +14,7 @@
 #import "FriendCardView.h"
 #import "SuperlativeCardView.h"
 #import "JudgeChoosingWinnerPhotoScrollView.h"
+#import "JudgeViewController.h"
 
 @interface GamePhotoScrollViewController ()
 
@@ -46,6 +47,13 @@
 
 @property (nonatomic, strong) NSString *currentlyViewing;
 @property (nonatomic, strong) JudgeChoosingWinnerPhotoScrollView *judgeChoosingWinnerPhotoScrollView;
+
+// to enter next round:
+@property (nonatomic, strong) NSArray *superlatives;
+@property (nonatomic, strong) NSMutableArray *nextRoundsCards;
+@property (nonatomic) NSInteger numCardsDownloaded;
+@property (nonatomic, strong) NSString *nextRoundSuperlative;
+@property (nonatomic) BOOL isReadyToBeginNextRound;
 
 @end
 
@@ -263,6 +271,7 @@
     [self.toolbar setBackgroundColor:bckgdColor];
     [self.view addSubview:self.toolbar];
     // end of toolbar code
+    [self.view setBackgroundColor:bckgdColor];
     
     // beginning of content code
     [self.contentView setFrame:CGRectMake(0, self.toolbar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.toolbar.frame.size.height)];
@@ -324,6 +333,7 @@
         //        [TableTalkUtil appDelegate].socket.delegate = vc;
         //        [self.navigationController pushViewController:vc animated:YES];
         
+        self.numFinished ++;
         
         // set up image view for animation
         self.selectedImageView = [[UIImageView alloc] initWithFrame:fv.frame];
@@ -388,17 +398,34 @@
         NSInteger index;
         for (int i = 0; i < self.choices.count; i++) {
             Choice *choice = [self.choices objectAtIndex:i];
-            if ([choice.fbId isEqualToString:fbId]) {
-                index = i;
+            if ([choice.chosenByFbId isEqualToString:fbId]) {
+                index = (NSInteger)i;
             }
         }
+        if ([[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlatives"]) {
+            self.superlatives = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"superlatives"];
+        } else {
+            self.nextRoundsCards = [[NSMutableArray alloc] init];
+            NSArray *nextRoundFbIds = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
+            for (NSString *fbId in nextRoundFbIds) {
+                Card *card = [[Card alloc] initWithFbId:fbId];
+                card.delegate = self;
+                [self.nextRoundsCards addObject:card];
+            }
+        }
+        
         [self.view bringSubviewToFront:self.judgeChoosingWinnerPhotoScrollView];
         [UIView animateWithDuration:.5 animations:^{
             [self.judgeChoosingWinnerPhotoScrollView setFrame:CGRectMake(0, self.toolbar.frame.size.height, self.view.frame.size.width, self.view.frame.size.height - self.toolbar.frame.size.height)];
         } completion:^(BOOL finished) {
             [self.judgeChoosingWinnerPhotoScrollView displayWinnerWithCardTapped:index];
+            if (self.superlatives) {
+                [self performSelector:@selector(showBlackScreenAndTapToPickSuperlative) withObject:Nil afterDelay:2];
+            }
         }];
     } else if ([[json objectForKey:@"name"] isEqualToString:@"playerFinished"]) {
+        self.numFinished ++;
+        [self.contentViewNumFinishedLabel setText:[NSString stringWithFormat:@"%d/%d players have chosen", self.numFinished,[TableTalkUtil instance].players.count]];
         NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
         NSString *selectedFbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
         Choice *choice = [[Choice alloc] initWithFbId:selectedFbId chosenByFbId:fbId];
@@ -411,7 +438,84 @@
     } else if ([[json objectForKey:@"name"] isEqualToString:@"currentlyViewing"]) {
         NSLog(@"is currently viewing %@", [[json objectForKey:@"args"] objectAtIndex:0]);
         // currentlyViewing nonsense?
+    } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"judgePickingSuperlative"]) {
+        NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
+        [UIView animateWithDuration:.5 animations:^{
+            for (UIView *view in self.view.subviews) {
+                [view setAlpha:0];
+            }
+        } completion:^(BOOL finished) {
+            UILabel *label = [TableTalkUtil tableTalkLabelWithFrame:self.view.bounds fontSize:22 text:[NSString stringWithFormat:@"%@ is picking the next superlative", @"Judge"]];
+            [label setAlpha:0];
+            [label setNumberOfLines:0];
+            [label setLineBreakMode:NSLineBreakByWordWrapping];
+            [self.view addSubview:label];
+            
+            [UIView animateWithDuration:.5 animations:^{
+                [label setAlpha:1];
+            }];
+        }];
+    } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"startRound"]) {
+        self.nextRoundSuperlative = [[[packet dataAsJSON] objectForKey:@"args"] objectAtIndex:0];
+        self.isReadyToBeginNextRound = YES;
+        if (self.numCardsDownloaded == self.nextRoundsCards.count) {
+            [self displayNextRoundGamePhotoScrollViewController];
+        }
     }
+}
+
+-(void)displayNextRoundGamePhotoScrollViewController
+{
+    GamePhotoScrollViewController *gvc = [[GamePhotoScrollViewController alloc] initWithCards:self.nextRoundsCards superlative:self.nextRoundSuperlative];
+    
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = .5;
+    transition.type = kCATransitionFade;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
+    
+    [self.navigationController setViewControllers:@[gvc] animated:NO];
+}
+
+-(void)didTapOnBlackScreenToBeginSuperlatives
+{
+    [[TableTalkUtil appDelegate].socket sendJudgePickingNextRoundsSuperlative];
+    JudgeViewController *jvc = [[JudgeViewController alloc] initWithPlayers:nil superlatives:self.superlatives];
+    
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = .5;
+    transition.type = kCATransitionFade;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
+    
+    [self.navigationController setViewControllers:@[jvc] animated:NO];
+    
+}
+
+-(void)showBlackScreenAndTapToPickSuperlative
+{
+    UIView *blackScreen = [[UIView alloc] initWithFrame:self.view.bounds];
+    [blackScreen setBackgroundColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:.8]];
+    [blackScreen setAlpha:0];
+    [self.view addSubview:blackScreen];
+    
+    UILabel *label = [TableTalkUtil tableTalkLabelWithFrame:blackScreen.bounds fontSize:20 text:@"You are the next judge. Tap to begin picking a superlative"];
+    [label setLineBreakMode:NSLineBreakByWordWrapping];
+    [label setNumberOfLines:0];
+    [blackScreen addSubview:label];
+    [UIView animateWithDuration:.5 animations:^{
+        [blackScreen setAlpha:1];
+    }];
+    
+    for (UIGestureRecognizer *rec in self.view.gestureRecognizers) {
+        [self.view removeGestureRecognizer:rec];
+    }
+    
+    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapOnBlackScreenToBeginSuperlatives)];
+    [self.view addGestureRecognizer:recognizer];
+    
 }
 
 -(void)displayJudgeSyncScreenPart2
@@ -429,6 +533,7 @@
         [self.contentViewNumFinishedLabel setText:@"Judge is viewing..."];
         [UIView animateWithDuration:.5 animations:^{
             [self.contentViewNumFinishedLabel setAlpha:1];
+        } completion:^(BOOL finished) {
         }];
     }];
 }
@@ -460,6 +565,15 @@
     [UIView animateWithDuration:.5 animations:^{
         [self.judgeChoosingWinnerPhotoScrollView scrollToFacebookId:currentlyViewing];
     }];
+}
+
+-(void)cardDidFinishDownloadingImageAndName:(Card *)card
+{
+    self.numCardsDownloaded ++;
+    
+    if (self.numCardsDownloaded == self.nextRoundsCards.count && self.isReadyToBeginNextRound) {
+        [self displayNextRoundGamePhotoScrollViewController];
+    }
 }
 
 -(void)didFinishDownloadingImageAndNameForChoice:(Choice *)choice

@@ -11,7 +11,7 @@
 #import "FriendCardView.h"
 #import "Choice.h"
 
-@interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate, NSURLConnectionDelegate, ChoiceDelegate>
+@interface GamePhotoScrollViewController : UIViewController <UIScrollViewDelegate, SocketUtilDelegate, NSURLConnectionDelegate, ChoiceDelegate, CardDelegate>
 
 -(id)initWithCards:(NSArray *)cards superlative:(NSString *) superlative;
 

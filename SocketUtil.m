@@ -66,6 +66,11 @@
     NSLog(@"sent judge currently looking at fbId");
 }
 
+-(void)sendJudgePickingNextRoundsSuperlative
+{
+    [self.socketIO sendEvent:@"nextRound" withData:nil];
+}
+
 -(void)socketIO:(SocketIO *)socket didSendMessage:(SocketIOPacket *)packet
 {
     NSLog(@"PACKET %@", packet);

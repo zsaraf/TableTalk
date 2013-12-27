@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "TableTalkUtil.h"
 #import "Choice.h"
+#import "Card.h"
 
-@interface JudgeViewController : UIViewController <SocketUtilDelegate, UIScrollViewDelegate, ChoiceDelegate>
+@interface JudgeViewController : UIViewController <SocketUtilDelegate, UIScrollViewDelegate, ChoiceDelegate, CardDelegate>
 
 -(id)initWithPlayers:(NSArray *)players superlatives:(NSArray *)superlatives;
 

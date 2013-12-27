@@ -50,7 +50,7 @@
 
 -(void)setDelegate:(id<UITableViewDelegate>)delegate
 {
-    NSAssert(delegate == self, @"score table view needs to be its own delegate");
+    //NSAssert(delegate == self, @"score table view needs to be its own delegate");
     
     [super setDelegate:delegate];
 }

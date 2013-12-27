@@ -35,6 +35,11 @@
 @property (nonatomic, strong) NSMutableArray *choices;
 @property (nonatomic, strong) JudgeChoosingWinnerPhotoScrollView *judgeChoosingWinnerPhotoScrollView;
 
+@property (nonatomic, strong) NSMutableArray *nextRoundCards;
+@property (nonatomic) NSInteger numNextRoundCardsDownloaded;
+@property (nonatomic) BOOL isReadyToMoveOntoGamePhotoScrollViewController;
+@property (nonatomic, strong) NSString *nextRoundSuperlative;
+
 @end
 
 @implementation JudgeViewController
@@ -65,6 +70,7 @@
 {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor colorWithRed:39/255. green:144/255. blue:210/255. alpha:1.];
     self.colors = [[NSMutableArray alloc] initWithObjects:
                    [UIColor colorWithRed:16/255. green:132/255. blue:205/255. alpha:1.],
                    [UIColor colorWithRed:39/255. green:144/255. blue:210/255. alpha:1.],
@@ -300,7 +306,65 @@
             }
         }
         [v changeToEnabledStateWithAnimation:YES];
+    } else if ([[json objectForKey:@"name"] isEqualToString:@"judgePickingSuperlative"]) {
+        NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
+        [UIView animateWithDuration:.5 animations:^{
+            for (UIView *view in self.view.subviews) {
+                [view setAlpha:0];
+            }
+        } completion:^(BOOL finished) {
+            UILabel *label = [TableTalkUtil tableTalkLabelWithFrame:self.view.bounds fontSize:22 text:[NSString stringWithFormat:@"%@ is picking the next superlative", @"Judge"]];
+            [label setAlpha:0];
+            [label setNumberOfLines:0];
+            [label setLineBreakMode:NSLineBreakByWordWrapping];
+            [self.view addSubview:label];
+            
+            [UIView animateWithDuration:.5 animations:^{
+                [label setAlpha:1];
+            }];
+        }];
+    } else if ([[json objectForKey:@"name"] isEqualToString:@"roundFinished"]) {
+        NSArray *nextRoundCards = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
+        self.nextRoundCards = [[NSMutableArray alloc] init];
+        for (NSString *fbId in nextRoundCards) {
+            Card *card = [[Card alloc] initWithFbId:fbId];
+            card.delegate = self;
+            [self.nextRoundCards addObject:card];
+        }
+    } else if ([[json objectForKey:@"name"] isEqualToString:@"startRound"]) {
+        if (self.nextRoundCards.count != 0) {
+            self.isReadyToMoveOntoGamePhotoScrollViewController = YES;
+            self.nextRoundSuperlative = [[json objectForKey:@"args"] objectAtIndex:0];
+            if (self.numNextRoundCardsDownloaded == self.nextRoundCards.count) {
+                [self changeToGamePhotoScrollViewController];
+            }
+        }
     }
 }
+
+-(void)changeToGamePhotoScrollViewController
+{
+    GamePhotoScrollViewController *gvc = [[GamePhotoScrollViewController alloc] initWithCards:self.nextRoundCards superlative:self.nextRoundSuperlative];
+    
+    CATransition *transition = [CATransition animation];
+    
+    transition.duration = .5;
+    transition.type = kCATransitionFade;
+    
+    [self.navigationController.view.layer addAnimation:transition forKey:kCATransition];
+    
+    [self.navigationController setViewControllers:@[gvc] animated:NO];
+
+}
+
+-(void)cardDidFinishDownloadingImageAndName:(Card *)card
+{
+    self.numNextRoundCardsDownloaded ++;
+    
+    if (self.numNextRoundCardsDownloaded ==  self.nextRoundCards.count && self.isReadyToMoveOntoGamePhotoScrollViewController) {
+        [self changeToGamePhotoScrollViewController];
+    }
+}
+
 
 @end
