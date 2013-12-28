@@ -9,7 +9,7 @@
 #import "Player.h"
 #import "TableTalkUtil.h"
 #import "SDWebImageManager.h"
-#import <AFNetworking.h>
+#import "AFNetworking.h"
 
 @implementation Player
 

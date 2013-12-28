@@ -9,7 +9,7 @@
 #import "Choice.h"
 #import "SDWebImageManager.h"
 #import "TableTalkUtil.h"
-#import <AFNetworking.h>
+#import "AFNetworking.h"
 
 @implementation Choice
 @synthesize delegate = _delegate;

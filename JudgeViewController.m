@@ -40,6 +40,9 @@
 @property (nonatomic) BOOL isReadyToMoveOntoGamePhotoScrollViewController;
 @property (nonatomic, strong) NSString *nextRoundSuperlative;
 
+@property (nonatomic) NSInteger numChoicesDownloaded;
+@property (nonatomic) NSInteger numPlayersDidFinish;
+
 @end
 
 @implementation JudgeViewController
@@ -202,9 +205,8 @@
 // choice delegate
 -(void)didFinishDownloadingImageAndNameForChoice:(Choice *)choice
 {
-    static NSInteger count = 0;
-    count++;
-    if (count == [TableTalkUtil instance].players.count) {
+    self.numChoicesDownloaded ++;
+    if (self.numChoicesDownloaded == [TableTalkUtil instance].players.count) {
         [self displaySelectedPlayersToBeginJudging];
     }
 }
@@ -288,8 +290,7 @@
     if ([[json objectForKey:@"name"] isEqualToString:@"startJudging"]) {
         NSArray *fbIDs = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"friends"];
     } else if ([[json objectForKey:@"name"] isEqualToString:@"playerFinished"]) {
-        static NSInteger numFinished = 0;
-        numFinished ++;
+        self.numPlayersDidFinish ++;
         NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
         NSString *selectedFbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"selectedFriend"];
         Choice *choice = [[Choice alloc] initWithFbId:selectedFbId chosenByFbId:fbId];
@@ -297,7 +298,7 @@
         [self.choices addObject:choice];
         
         SuperlativeCardView *scv = [self.views firstObject];
-        [scv setNumFinishedLabelTextWithNumFinished:numFinished];
+        [scv setNumFinishedLabelTextWithNumFinished:self.numPlayersDidFinish];
         
         BlurredWaitingForPlayersToFinishView *v;
         for (BlurredWaitingForPlayersToFinishView *view in self.playerViews) {

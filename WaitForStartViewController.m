@@ -11,12 +11,12 @@
 #import "GamePhotoScrollViewController.h"
 #import "JudgeViewController.h"
 #import "SDWebImageManager.h"
-#import <AFNetworking.h>
+#import "AFNetworking.h"
 
 @interface WaitForStartViewController ()
 
 @property (nonatomic, strong) NSArray *superlatives;
-
+@property (nonatomic) NSInteger numPlayersDidFinishDownloading;
 @end
 
 @implementation WaitForStartViewController
@@ -46,9 +46,8 @@
 
 -(void)playerDidFinishDownloadingImageAndName:(Player *)player
 {
-    static NSInteger counter = 0;
-    counter ++;
-    if (counter == [TableTalkUtil instance].players.count) {
+    self.numPlayersDidFinishDownloading ++;
+    if (self.numPlayersDidFinishDownloading == [TableTalkUtil instance].players.count) {
         NSLog(@"good we can continue with judge");
     }
 }

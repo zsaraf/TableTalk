@@ -437,7 +437,9 @@
         [self.contentViewNumFinishedLabel setText:[NSString stringWithFormat:@"%d/%d players have chosen", self.choices.count,[TableTalkUtil instance].players.count]];
     } else if ([[json objectForKey:@"name"] isEqualToString:@"currentlyViewing"]) {
         NSLog(@"is currently viewing %@", [[json objectForKey:@"args"] objectAtIndex:0]);
-        // currentlyViewing nonsense?
+        [UIView animateWithDuration:.5 animations:^{
+            [self.judgeChoosingWinnerPhotoScrollView scrollToFacebookId:[[json objectForKey:@"args"] objectAtIndex:0]];
+        }];
     } else if ([[packet.dataAsJSON objectForKey:@"name"] isEqualToString:@"judgePickingSuperlative"]) {
         NSString *fbId = [[[json objectForKey:@"args"] objectAtIndex:0] objectForKey:@"fbID"];
         [UIView animateWithDuration:.5 animations:^{

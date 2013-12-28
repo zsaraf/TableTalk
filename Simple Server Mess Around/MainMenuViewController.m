@@ -37,6 +37,8 @@
 @property (nonatomic, strong) NSMutableArray *friends;
 @property (nonatomic) BOOL isReadyToDisplayFriendCards;
 
+@property (nonatomic) NSInteger numPlayersDidFinishDownloading;
+
 @end
 
 @implementation MainMenuViewController
@@ -192,6 +194,7 @@
                                withParameters:[NSDictionary dictionaryWithObjectsAndKeys:geoPoint, @"location", nil]
                                         block:^(id object, NSError *error) {
                                             NSLog(@"%@ %@", object, error);
+                                            object = @"prat";
                                             [TableTalkUtil appDelegate].socket = [[SocketUtil alloc] initWithDelegate:  self andGroupId:object];
                                         }];
         }
@@ -344,9 +347,8 @@
 
 -(void)playerDidFinishDownloadingImageAndName:(Player *)player
 {
-    static NSInteger counter = 0;
-    counter ++;
-    if (counter == [TableTalkUtil instance].players.count) {
+    self.numPlayersDidFinishDownloading ++;
+    if (self.numPlayersDidFinishDownloading == [TableTalkUtil instance].players.count) {
         NSLog(@"good we can continue with judge");
     }
     
@@ -367,7 +369,7 @@
     
     [self reorganizeBlurbsWithCompletionHandler:nil];
     
-    if (counter == 2) {
+    if (self.numPlayersDidFinishDownloading == 2) {
         self.readyToPlayButton = [[UIButton alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 80, self.view.frame.size.width, 80)];
         UIImage *backgroundImage = [self imageWithColor:[UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:1.]];
         UIImage *selectedBackgroundImage = [self imageWithColor:[UIColor colorWithRed:46/255. green:204/255. blue:113/255. alpha:.5]];

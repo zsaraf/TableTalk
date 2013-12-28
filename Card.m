@@ -9,7 +9,7 @@
 #import "Card.h"
 #import "SDWebImageManager.h"
 #import "TableTalkUtil.h"
-#import <AFHTTPRequestOperation.h>
+#import "AFHTTPRequestOperation.h"
 
 @implementation Card
 
